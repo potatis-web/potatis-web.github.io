@@ -1,1 +1,18 @@
 @import 'tailwindcss';
+
+@layer utilities {
+  .btn-primary {
+    @apply text-blue-50 cursor-pointer shadow p-2 rounded border border-neutral-500 
+      hover:-translate-0.5 
+    hover:bg-neutral-200/10 
+      active:translate-0.5 
+      
+      transition-all;
+  }
+  .quiz {
+    @apply text-blue-50 p-4 h-56 w-1/5 shadow-xl rounded relative border-neutral-500 overflow-hidden
+
+    transition-all;
+  }
+}
+
