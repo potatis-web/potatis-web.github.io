@@ -16,3 +16,14 @@
   }
 }
 
+@theme {
+  --animate-timer: timer 5s linear 1;
+  @keyframes timer {
+    0% {
+      width: 100%;
+    } 
+    100% {
+      width: 0;
+    }
+  }
+}
