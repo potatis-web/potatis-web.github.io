@@ -32,7 +32,7 @@
     draw();
     getSize();
 
-    document.addEventListener('resize', getSize);
+    window.addEventListener('resize', getSize);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp)
   })
@@ -43,7 +43,6 @@
     const ctx = canvas.getContext("2d");
 
     // Process input
-
     const moveSpeed = 0.04
     const lookSpeed = 0.05
 
@@ -52,6 +51,9 @@
 
     data.player.x = data.keys.ArrowUp ? data.player.x + Math.cos(data.player.ang) * moveSpeed : data.player.x;
     data.player.y = data.keys.ArrowUp ? data.player.y + Math.sin(data.player.ang) * moveSpeed : data.player.y
+
+    data.player.x = data.keys.ArrowDown ? data.player.x - Math.cos(data.player.ang) * moveSpeed : data.player.x;
+    data.player.y = data.keys.ArrowDown ? data.player.y - Math.cos(data.player.ang) * moveSpeed : data.player.y;
 
     // Fullscreen
     canvas.width = data.screen.x;
@@ -82,7 +84,13 @@
     // Draw player in top right
     ctx.fillStyle = "#aaa";
     ctx.beginPath();
-    ctx.arc(data.player.x * mapSize, data.player.y * mapSize, playerSize, 0, Math.PI * 2)
+    ctx.arc(
+      data.player.x * mapSize, // x
+      data.player.y * mapSize, // y
+      playerSize,              // radius
+      0,                       // start ang
+      Math.PI * 2              // end ang
+    )
     ctx.fill()
 
 
@@ -94,7 +102,10 @@
     ctx.moveTo(data.player.x * mapSize, data.player.y * mapSize)
 
     ctx.lineWidth = 2;
-    ctx.lineTo(data.player.x * mapSize + lineLength * Math.cos(data.player.ang), data.player.y * mapSize + lineLength * Math.sin(data.player.ang));
+    ctx.lineTo(
+      data.player.x * mapSize + lineLength * Math.cos(data.player.ang), // x
+      data.player.y * mapSize + lineLength * Math.sin(data.player.ang)  // y
+    );
     ctx.stroke();
     requestAnimationFrame(draw);
   }
@@ -116,6 +127,9 @@
       case "ArrowUp":
         data.keys.ArrowUp = true;
         break;
+      case "ArrowDown":
+        data.keys.ArrowDown = true;
+        break;
       default:
         return;
     }
@@ -130,6 +144,9 @@
         break;
       case "ArrowUp":
         data.keys.ArrowUp = false;
+        break;
+      case "ArrowDown":
+        data.keys.ArrowDown = false;
         break;
     }
   }
@@ -239,32 +256,27 @@
 
       const { distance, side } = castRay(data.player.x, data.player.y, rayAngle);
       
+      // Fix fish-eye distortion
       const correctedDistance = distance * Math.cos(rayAngle - data.player.ang);
       
       const shade = side === 1 ? 0.7 : 1;
       ctx.fillStyle = `hsl(0, 0%, ${Math.max(10, (100 - correctedDistance * 8) * shade)}%)`;
       
-
-      // Fix fish-eye distortion
-
-      
-
-      
-
       // Calculate wall height based on distance
-
       const wallHeightOnScreen = correctedDistance > 0 ? wallHeight / correctedDistance : 0;
 
       
 
       // Draw vertical wall slice
-
       ctx.fillStyle = `hsl(0, 0%, ${Math.max(10, 100 - correctedDistance * 8)}%)`;
 
       const wallTop = (data.screen.y - wallHeightOnScreen) / 2;
 
       ctx.fillRect(i, wallTop, 1, wallHeightOnScreen);
 
+      ctx.fillStyle = "#000"
+      ctx.fillRect(i,wallTop,1,2)
+      ctx.fillRect(i,wallTop+wallHeightOnScreen,1,2)
     }
 
   }
