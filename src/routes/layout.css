@@ -7,17 +7,21 @@
       hover:bg-soft-linen-300
       active:translate-0.5 
       
-      transition-all;
+      transition-all
+  }
+  .sort-icon {
+    @apply flex justify-center items-center gap-1
   }
   .quiz {
     @apply p-4 h-56 w-1/5 shadow rounded relative overflow-hidden border border-soft-linen-300
     
-    transition-all;
+    transition-all
   }
   .text-field {
     @apply p-2 text-center rounded box-border border-2 border-transparent
     focus:outline-0 focus:border-soft-linen-300 
     
+    transition-all
   }
 }
 
