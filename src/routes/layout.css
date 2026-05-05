@@ -23,6 +23,57 @@
     
     transition-all
   }
+  .field-wrapper {
+    @apply flex justify-between w-1/2
+  }
+
+  .page-shell {
+    @apply min-h-screen bg-soft-linen-50 text-dusk-blue-900 antialiased;
+  }
+
+  .card {
+    @apply rounded-2xl border border-soft-linen-300 bg-soft-linen-100 shadow p-6;
+  }
+
+  .card-accent {
+    @apply rounded-2xl border border-dry-sage-200 bg-dry-sage-50 shadow-inner p-6;
+  }
+
+  .panel {
+    @apply rounded-xl border border-soft-linen-300 bg-soft-linen-100 p-4 shadow;
+  }
+
+  .modal-backdrop {
+    @apply fixed inset-0 bg-black/10 backdrop-blur-sm;
+  }
+
+  .modal-panel {
+    @apply relative w-full max-w-3xl rounded-3xl border border-soft-linen-300 bg-soft-linen-100 p-6 shadow-2xl;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border-2 border-soft-linen-300 bg-white px-4 py-3 text-dusk-blue-900 placeholder:text-dusk-blue-500 focus:border-dusk-blue-500 focus:outline-none focus:ring-2 focus:ring-dusk-blue-100 transition;
+  }
+
+  .btn-secondary {
+    @apply cursor-pointer rounded-lg border border-transparent bg-dusk-blue-500 px-4 py-2 text-white shadow hover:bg-dusk-blue-600 active:scale-[0.98] transition;
+  }
+
+  .btn-danger {
+    @apply cursor-pointer rounded-lg border border-red-300 bg-red-500 px-4 py-2 text-white shadow hover:bg-red-600 active:scale-[0.98] transition;
+  }
+
+  .field-group {
+    @apply flex flex-col gap-2;
+  }
+
+  .section-heading {
+    @apply text-xl font-semibold text-dusk-blue-900;
+  }
+
+  .notice-card {
+    @apply rounded-xl border border-dry-sage-200 bg-dry-sage-50 p-4 text-dusk-blue-900 shadow-sm;
+  }
 }
 
 @theme {
