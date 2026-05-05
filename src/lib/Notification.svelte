@@ -21,6 +21,3 @@
     <span class="textwrap">{text}</span>
   <i class="animate-timer bg-dusk-blue-500 absolute left-0 bottom-0 w-full h-0.5"></i>
 </div>
-
-
-
