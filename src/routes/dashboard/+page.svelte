@@ -124,7 +124,13 @@
 	</div>
 
 	<!--TODO: add content in side bar-->
-	<div class="row-span-2 border-t-0"></div>
+	<div class="row-span-2 border-t-0">
+		<nav class="flex flex-col">
+			<a href={resolve('/')}>Home</a>
+			<a href={resolve('/account')}>Account</a>
+			<a href={resolve('/devlog')}>Devlog</a>
+		</nav>
+	</div>
 
 	<!--Quiz management-->
 	<div class="flex items-center gap-4 p-4">

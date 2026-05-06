@@ -3,28 +3,39 @@
 @layer components {
   .btn-primary {
     @apply 
-      cursor-pointer shadow p-2 rounded border border-soft-linen-300 text-dusk-blue-800 
-      hover:bg-soft-linen-300
-      active:translate-0.5 
+      cursor-pointer shadow px-3 py-2 rounded-[99999px] border border-soft-linen-300 text-dusk-blue-800 
+      hover:bg-soft-linen-300 hover:text-dusk-blue-100
+      active:scale-95
       
       transition-all
   }
+
+  .btn-secondary {
+    @apply border
+  }
+
   .sort-icon {
-    @apply flex justify-center items-center gap-1
+    @apply 
+      flex justify-center items-center gap-1
   }
+
   .quiz {
-    @apply p-4 h-56 w-1/5 shadow rounded relative overflow-hidden border border-soft-linen-300
+    @apply 
+      p-4 h-56 w-1/5 shadow rounded relative overflow-hidden border border-soft-linen-300
     
-    transition-all
+      transition-all
   }
+
   .text-field {
-    @apply p-2 text-center rounded box-border border-2 border-transparent
-    focus:outline-0 focus:border-soft-linen-300 
-    
-    transition-all
+    @apply 
+      p-2 text-center rounded box-border border-2 border-transparent
+      focus:outline-0 focus:border-soft-linen-300 
+      
+      transition-all
   }
+
   .field-wrapper {
-    @apply flex justify-between w-1/2
+    @apply flex justify-between items-center
   }
 
   .page-shell {
@@ -52,32 +63,17 @@
   }
 
   .input-field {
-    @apply w-full rounded-lg border-2 border-soft-linen-300 bg-white px-4 py-3 text-dusk-blue-900 placeholder:text-dusk-blue-500 focus:border-dusk-blue-500 focus:outline-none focus:ring-2 focus:ring-dusk-blue-100 transition;
+    @apply w-9/12 rounded-lg border-2 border-soft-linen-300 bg-soft-linen-50 px-4 py-3 text-dusk-blue-900 placeholder:text-dusk-blue-600 focus:border-dusk-blue-600 focus:outline-none focus:ring-2 focus:ring-dusk-blue-100 transition;
   }
 
-  .btn-secondary {
-    @apply cursor-pointer rounded-lg border border-transparent bg-dusk-blue-500 px-4 py-2 text-white shadow hover:bg-dusk-blue-600 active:scale-[0.98] transition;
-  }
-
-  .btn-danger {
-    @apply cursor-pointer rounded-lg border border-red-300 bg-red-500 px-4 py-2 text-white shadow hover:bg-red-600 active:scale-[0.98] transition;
-  }
-
-  .field-group {
-    @apply flex flex-col gap-2;
-  }
-
-  .section-heading {
+  .heading {
     @apply text-xl font-semibold text-dusk-blue-900;
-  }
-
-  .notice-card {
-    @apply rounded-xl border border-dry-sage-200 bg-dry-sage-50 p-4 text-dusk-blue-900 shadow-sm;
   }
 }
 
 @theme {
   --animate-timer: timer 5s linear 1 forwards;
+  --animate-fade-in: fadeIn 1500ms 1 forwards;
 
   --color-dry-sage-50: oklch(96.98% 0.010 93.57);
   --color-dry-sage-100: oklch(94.11% 0.021 98.12);
@@ -146,6 +142,16 @@
     } 
     100% {
       width: 0;
+    }
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

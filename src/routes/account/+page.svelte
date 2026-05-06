@@ -11,21 +11,30 @@
   }
 
   function getMode() {
-    return mode === 'login' ? 'Log-In' : 'Sign-Up'
+    return mode === 'login' ? 'Log In' : 'Sign Up';
+  }
+
+  function validateForm() {
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+
+    const val = password.getAttribute("value")
+    console.log(val)
   }
 </script>
-
+<title>{getMode()} - Quizmaker.gg</title>
 <main class="fixed inset-0 flex justify-center items-center">
   <img src={waveBG} alt="background" class="fixed">
-  <form class="bg-soft-linen-100 h-9/10 w-3/5 shadow z-10 rounded flex flex-col gap-4 p-4 " onsubmit={handleSubmit}>
-    <h1>{getMode()}</h1>
+
+  <form class="z-10 flex flex-col bg-soft-linen-100 p-8 rounded-2xl gap-4 h-4/5 w-1/3 shadow relative animate-fade-in" onsubmit={handleSubmit}>
+    <h1 class="heading">{getMode()}</h1>
     <div class="field-wrapper">
       <label for="email">E-Mail:</label>
-      <input placeholder="example@email.com" id="email" type="email" class="border-2 border-soft-linen-300 p-2 rounded">
+      <input required placeholder="example@email.com" id="email" type="email" class="input-field" oninput={validateForm}>
     </div>
     <div class="field-wrapper">
       <label for="password" class="">Password:</label>
-      <input placeholder="Password" id="password" type="password" class="border-2 border-soft-linen-300 p-2 rounded ">
+      <input required placeholder="Password" id="password" type="password" class="input-field" oninput={validateForm}>
     </div>
 
     <div class="field-wrapper">
@@ -33,12 +42,12 @@
       <input type="submit" id="submit" class="btn-primary">
     </div>
 
-    <div>
+    <div class="absolute bottom-8">
       {mode === 'login' ? 'Already have an' : 'No '} account?
-      <button class="btn-primary" onclick={() => {mode = mode === 'signin' ? 'login' : 'signin'}}>{getMode()}</button>
-      <button class="btn-primary">Cancel</button>
+      <button class="underline cursor-pointer" onclick={() => {mode = mode === 'signin' ? 'login' : 'signin'}}>{getMode()}</button> instead
     </div>
 
     
   </form>
 </main>
+
