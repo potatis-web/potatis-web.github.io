@@ -129,7 +129,7 @@
 {#if quiz}
 	<title>{quiz.name ? quiz.name : 'Empty'} - Quizmaker.gg</title>
 	{#if modalOpen}
-		<div class="fixed inset-0 z-9998 flex items-center justify-center bg-black/10"></div>
+		<div class="modal-backdrop"></div>
 		<div
 			class="fixed inset-0 z-9999 flex items-center justify-center"
 			onclick={() => {

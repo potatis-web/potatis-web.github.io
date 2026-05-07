@@ -69,6 +69,10 @@
   .heading {
     @apply text-xl font-semibold text-dusk-blue-900;
   }
+
+  .anim-underline {
+    @apply bg-dusk-blue-800 w-0 absolute bottom-0 group-hover:w-51/100 h-1 transition-all
+  }
 }
 
 @theme {

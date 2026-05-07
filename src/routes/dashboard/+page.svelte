@@ -3,6 +3,8 @@
 	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
 	import Notification from '$lib/Notification.svelte';
+	import { onAuthStateChange, getCurrentUser } from '$lib/auth';
+	import { getMyQuizzes } from '$lib/quizManager';
 	const quizTemplate = {
 		name: 'New Quiz',
 		description: 'A short description goes here',
@@ -18,93 +20,35 @@
 		],
 	};
 	let selectedIndex = $state();
-	const userTemplate = {
-		ql: [
-			{
-				id: 'quiz-1',
-				name: 'Cheese Quiz',
-				description: 'Test your cheese knowledge',
-				image: 'https://www.schultzscheese.com/wp-content/uploads/2015/06/swiss.jpg',
-				q: [
-					{
-						title: 'Is cheese good?',
-						options: [
-							{ text: 'Yes, absolutely!', value: 'yes' },
-							{ text: 'No, not really', value: 'no' },
-							{ text: 'It depends on the type', value: 'maybe' },
-						],
-					},
-					{
-						title: "What's your favorite cheese?",
-						options: [
-							{ text: 'Cheddar', value: 'cheddar' },
-							{ text: 'Mozzarella', value: 'mozzarella' },
-							{ text: 'Brie', value: 'brie' },
-							{ text: 'Blue cheese', value: 'blue' },
-						],
-					},
-				],
-			},
-		],
-	};
+	
+	let user = null;
 
-	const saveDelay = 300;
-	let userData = $state();
 	let notifications = $state([]);
-	let loaded = $state(false);
+	let loading = $state(false);
 
+	let modalOpen = $state(false);
+
+	let ql = $state();
 	onMount(() => {
-		const storedUser = localStorage.getItem('user');
-
-		if (!storedUser) {
-			localStorage.setItem('user', JSON.stringify(userTemplate));
-			userData = userTemplate;
-		} else {
-			userData = JSON.parse(storedUser);
+		const {data: { subscription }} = onAuthStateChange( async (currentUser) => {
+			user = currentUser;
+			if (user) {
+				await loadQuizzes()
+			}
+		})
+		return () => {
+			subscription?.unsubscribe();
 		}
-		loaded = true;
 	});
 
-	// For saving to localStorage
-	let saveTimeout;
-	$effect(() => {
-		if (!loaded) return;
-
-    const snapshot = $state.snapshot(userData);
-		clearTimeout(saveTimeout);
-		saveTimeout = setTimeout(() => {
-			localStorage.setItem('user', JSON.stringify(snapshot));
-      console.log("Saved to localStorage")
-		}, saveDelay);
-	});
-
-	function addQuiz() {
-		if (!userData.ql) {
-			userData.ql = [];
-		}
-		userData.ql.push({
-			...quizTemplate,
-			id: `${crypto.randomUUID()}`,
-		});
-		selectedIndex = userData.ql.length - 1;
+	async function loadQuizzes() {
+		loading = true;
+		const result = await getMyQuizzes(user.id);
+		ql = result.quizzes || [];
+		loading = false;
 	}
 
-	function deleteQuiz() {
-		if (selectedIndex === null || selectedIndex === -1 || selectedIndex === undefined) {
-			makeNotification('No quiz selected', 'info');
-			return;
-		}
-		userData.ql.splice(selectedIndex, 1);
-		selectedIndex = userData.ql.length - 1;
-	}
 
-	function editQuiz() {
-		if (selectedIndex === null || selectedIndex === -1) {
-			makeNotification('No quiz selected ', 'info');
-			return;
-		}
-		goto(resolve(`/quiz/${userData.ql[selectedIndex ?? 0].id}`));
-	}
 
 	function makeNotification(text, type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
@@ -119,23 +63,44 @@
 	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300"
 >
 	<!--TODO: add content in top bar (maybe icon or something?)-->
-	<div class=" col-span-2 flex h-full items-center justify-center border-b-0">
+	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
+		<button class="btn-primary w-12 h-12">
+			<span class="text-xl">{"q".toUpperCase()}</span>
+		</button>
 	</div>
 
 	<!--TODO: add content in side bar-->
 	<div class="row-span-2 border-t-0">
-		<nav class="flex flex-col">
-			<a href={resolve('/')}>Home</a>
-			<a href={resolve('/account')}>Account</a>
-			<a href={resolve('/devlog')}>Devlog</a>
+		<nav class="flex flex-col gap-4 items-center p-4">
+			<a href={resolve('/')} class="group relative px-4 py-2 heading active:bg-black/10">
+				<span>Home</span>
+				<div>
+					<i class="anim-underline left-0"></i>
+					<i class="anim-underline right-0"></i>
+				</div>
+			</a>
+			<a href={resolve('/account')} class="group relative px-4 py-2 heading active:bg-black/10">
+				<span>Account</span>
+				<div>
+					<i class="anim-underline left-0"></i>
+					<i class="anim-underline right-0"></i>
+				</div>
+			</a>
+			<a href={resolve('/devlog')} class="group relative px-4 py-2 heading active:bg-black/10">
+				<span>Devlog</span>
+				<div>
+					<i class="anim-underline left-0"></i>
+					<i class="anim-underline right-0"></i>
+				</div>
+			</a>
 		</nav>
 	</div>
 
 	<!--Quiz management-->
 	<div class="flex items-center gap-4 p-4">
 		<h2 class="">Quizzes</h2>
-		<button class="btn-primary sort-icon" onclick={addQuiz}>
+		<button class="btn-primary sort-icon" onclick={makeNotification()}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -148,7 +113,7 @@
 			</svg>
 			<span>Add Quiz</span>
 		</button>
-		<button class="btn-primary sort-icon" onclick={editQuiz}>
+		<button class="btn-primary sort-icon" onclick={makeNotification()}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -165,7 +130,7 @@
 			</svg>
 			<span>Edit Quiz</span>
 		</button>
-		<button class="btn-primary sort-icon" onclick={deleteQuiz}>
+		<button class="btn-primary sort-icon" onclick={makeNotification()}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -179,8 +144,8 @@
 			<span>Delete Quiz</span>
 		</button>
 	</div>
-	{#if userData?.ql}
-		{#if userData.ql.length === 0}
+	{#if ql}
+		{#if ql.length === 0}
 			<div class="flex h-full items-center justify-center self-center">
 				<div class="flex flex-col items-center">
 					<svg
@@ -200,7 +165,7 @@
 			</div>
 		{:else}
 			<main class="flex flex-wrap gap-4 overflow-y-scroll p-4">
-				{#each userData.ql as quiz, i (quiz)}
+				{#each ql as quiz, i (quiz)}
 					<button
 						class={`quiz border ${i === selectedIndex ? 'border-2' : ''}`}
 						onclick={() => (selectedIndex = i)}
@@ -219,6 +184,12 @@
 	{/if}
 </div>
 
+
+{#if modalOpen}
+	<div class="modal-backdrop">
+		<div></div>
+	</div>
+{/if}
 <!--Notifications-->
 <aside class="fixed right-4 bottom-4 flex flex-col gap-4">
 	{#each notifications as not (not.id)}

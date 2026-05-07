@@ -1,6 +1,6 @@
 <script>
   import { fade } from "svelte/transition";
-  let {text, type = "info"} = $props();
+  let {text = "Placeholder", type = "info"} = $props();
 </script>
 
 
