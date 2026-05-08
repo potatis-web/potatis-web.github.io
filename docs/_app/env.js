@@ -1,1 +1,1 @@
-export const env={}
+export const env={"PUBLIC_SUPABASE_URL":"https://bbwbzlixccnelcjxezgk.supabase.co","PUBLIC_SUPABASE_PUBLISHABLE_KEY":"sb_publishable_Vzsa0fGOG38ZP5qb2kYwPw_L3h4N-hC"}

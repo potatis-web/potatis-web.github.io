@@ -21,27 +21,27 @@
 		],
 	};
 	let selectedIndex = $state();
-	
-	let user = null;
-
+	let user = $state(null);
 	let notifications = $state([]);
 	let loading = $state(false);
-
 	let modalOpen = $state(false);
-
 	let ql = $state();
+	const letterFormat = (s) => {return s.slice(0,1).toUpperCase()}
+
 	onMount(() => {
-		const {data: { subscription }} = onAuthStateChange( async (currentUser) => {
+		const {
+			data: { subscription },
+		} = onAuthStateChange(async (currentUser) => {
 			user = currentUser;
 			if (user) {
-				await loadQuizzes()
+				await loadQuizzes();
 			} else {
-				goto(resolve('/account'))
+				goto(resolve('/account'));
 			}
-		})
+		});
 		return () => {
 			subscription?.unsubscribe();
-		}
+		};
 	});
 
 	async function loadQuizzes() {
@@ -50,7 +50,6 @@
 		ql = result.quizzes || [];
 		loading = false;
 	}
-
 
 	function makeNotification(text, type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
@@ -67,30 +66,31 @@
 	<!--Top bar-->
 	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
-		<button class="btn-primary w-12 h-12 bg-soft-linen-50">
-			<span class="text-xl">{"q".toUpperCase()}</span>
+		<button class="btn-primary h-12 w-12 bg-soft-linen-50">
+			{#if user?.email}
+				<span class="text-xl">{letterFormat(user?.email)}</span>
+			{/if}
 		</button>
 		<button class="btn-primary" onclick={logOut}>Log out</button>
 	</div>
 
-
 	<div class="row-span-2 border-t-0">
-		<nav class="flex flex-col gap-4 items-center p-4">
-			<a href={resolve('/')} class="group relative px-4 py-2 heading active:bg-black/10">
+		<nav class="flex flex-col items-center gap-4 p-4">
+			<a href={resolve('/')} class="group heading relative px-4 py-2 active:bg-black/10">
 				<span>Home</span>
 				<div>
 					<i class="anim-underline left-0"></i>
 					<i class="anim-underline right-0"></i>
 				</div>
 			</a>
-			<a href={resolve('/account')} class="group relative px-4 py-2 heading active:bg-black/10">
+			<a href={resolve('/account')} class="group heading relative px-4 py-2 active:bg-black/10">
 				<span>Account</span>
 				<div>
 					<i class="anim-underline left-0"></i>
 					<i class="anim-underline right-0"></i>
 				</div>
 			</a>
-			<a href={resolve('/devlog')} class="group relative px-4 py-2 heading active:bg-black/10">
+			<a href={resolve('/devlog')} class="group heading relative px-4 py-2 active:bg-black/10">
 				<span>Devlog</span>
 				<div>
 					<i class="anim-underline left-0"></i>
@@ -103,7 +103,7 @@
 	<!--Quiz management-->
 	<div class="flex items-center gap-4 p-4">
 		<h2 class="">Quizzes</h2>
-		<button class="btn-primary sort-icon" onclick={() => modalOpen = true}>
+		<button class="btn-primary sort-icon" onclick={() => (modalOpen = true)} disabled={loading}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -116,7 +116,7 @@
 			</svg>
 			<span>Add Quiz</span>
 		</button>
-		<button class="btn-primary sort-icon" onclick={makeNotification()}>
+		<button class="btn-primary sort-icon" onclick={makeNotification()} disabled={loading}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -133,7 +133,7 @@
 			</svg>
 			<span>Edit Quiz</span>
 		</button>
-		<button class="btn-primary sort-icon" onclick={makeNotification()}>
+		<button class="btn-primary sort-icon" onclick={makeNotification()} disabled={loading}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -187,24 +187,35 @@
 	{/if}
 </div>
 
-
 <!--svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions-->
 <!--Modal-->
 {#if modalOpen}
-	<div class="modal-backdrop flex justify-center items-center" onclick={() => modalOpen = false} onkeydown={(e) => {modalOpen = e.key !== "Escape";}} transition:fade>
+	<div
+		class="modal-backdrop flex items-center justify-center"
+		onclick={() => (modalOpen = false)}
+		onkeydown={(e) => {
+			modalOpen = e.key !== 'Escape';
+		}}
+		transition:fade
+	>
 		<div onclick={(e) => e.stopPropagation()} class="modal-panel">
-		
-			<form class="flex flex-col gap-4" >
-				<div class="flex justify-end items-center">
-					<button class="btn-primary" onclick={() => modalOpen = false}>X</button>
+			<form class="flex flex-col gap-4">
+				<div class="flex items-center">
+					<span class="heading self-start">Make a quiz</span>
+					<button class="btn-primary" onclick={() => (modalOpen = false)}>X</button>
 				</div>
 				<div class="field-wrapper">
 					<label for="qn">Quiz name:</label>
-					<input id="qn" type="text" placeholder="New Quiz" class="input-field">
+					<input id="qn" type="text" placeholder="New Quiz" class="input-field" />
 				</div>
 				<div class="field-wrapper">
 					<label for="qd" class="">Quiz description:</label>
-					<textarea id="qd" placeholder="A short description goes here" class="input-field resize-none" rows="2"></textarea>
+					<textarea
+						id="qd"
+						placeholder="A short description goes here"
+						class="input-field resize-none"
+						rows="2"
+					></textarea>
 				</div>
 			</form>
 		</div>

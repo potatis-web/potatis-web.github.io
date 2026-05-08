@@ -45,7 +45,6 @@
 
 		quizId = page.params.id;
 
-
 		// Find in userData
 		quiz = userData.ql?.find(findQuiz);
 
