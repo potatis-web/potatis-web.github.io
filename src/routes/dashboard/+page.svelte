@@ -56,6 +56,7 @@
 		notifications.push(obj);
 		setTimeout(() => notifications.shift(), 5000);
 	}
+
 </script>
 
 <title>Dashboard - Quizmaker.gg</title>
