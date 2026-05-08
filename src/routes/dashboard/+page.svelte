@@ -3,7 +3,8 @@
 	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
 	import Notification from '$lib/Notification.svelte';
-	import { onAuthStateChange, getCurrentUser } from '$lib/auth';
+	import { onAuthStateChange, getCurrentUser, logOut } from '$lib/auth';
+	import { fade } from 'svelte/transition';
 	import { getMyQuizzes } from '$lib/quizManager';
 	const quizTemplate = {
 		name: 'New Quiz',
@@ -34,6 +35,8 @@
 			user = currentUser;
 			if (user) {
 				await loadQuizzes()
+			} else {
+				goto(resolve('/account'))
 			}
 		})
 		return () => {
@@ -49,7 +52,6 @@
 	}
 
 
-
 	function makeNotification(text, type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
 		notifications.push(obj);
@@ -62,15 +64,16 @@
 <div
 	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300"
 >
-	<!--TODO: add content in top bar (maybe icon or something?)-->
+	<!--Top bar-->
 	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
-		<button class="btn-primary w-12 h-12">
+		<button class="btn-primary w-12 h-12 bg-soft-linen-50">
 			<span class="text-xl">{"q".toUpperCase()}</span>
 		</button>
+		<button class="btn-primary" onclick={logOut}>Log out</button>
 	</div>
 
-	<!--TODO: add content in side bar-->
+
 	<div class="row-span-2 border-t-0">
 		<nav class="flex flex-col gap-4 items-center p-4">
 			<a href={resolve('/')} class="group relative px-4 py-2 heading active:bg-black/10">
@@ -100,7 +103,7 @@
 	<!--Quiz management-->
 	<div class="flex items-center gap-4 p-4">
 		<h2 class="">Quizzes</h2>
-		<button class="btn-primary sort-icon" onclick={makeNotification()}>
+		<button class="btn-primary sort-icon" onclick={() => modalOpen = true}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -185,25 +188,32 @@
 </div>
 
 
+<!--svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions-->
+<!--Modal-->
 {#if modalOpen}
-	<div class="modal-backdrop">
-		<div></div>
+	<div class="modal-backdrop flex justify-center items-center" onclick={() => modalOpen = false} onkeydown={(e) => {modalOpen = e.key !== "Escape";}} transition:fade>
+		<div onclick={(e) => e.stopPropagation()} class="modal-panel">
+		
+			<form class="flex flex-col gap-4" >
+				<div class="flex justify-end items-center">
+					<button class="btn-primary" onclick={() => modalOpen = false}>X</button>
+				</div>
+				<div class="field-wrapper">
+					<label for="qn">Quiz name:</label>
+					<input id="qn" type="text" placeholder="New Quiz" class="input-field">
+				</div>
+				<div class="field-wrapper">
+					<label for="qd" class="">Quiz description:</label>
+					<textarea id="qd" placeholder="A short description goes here" class="input-field resize-none" rows="2"></textarea>
+				</div>
+			</form>
+		</div>
 	</div>
 {/if}
+
 <!--Notifications-->
 <aside class="fixed right-4 bottom-4 flex flex-col gap-4">
 	{#each notifications as not (not.id)}
 		<Notification text={not.text} type={not.type} />
 	{/each}
 </aside>
-<!--
-Background → Soft Linen 50–100
-Cards → Soft Linen 100 / Dry Sage 50
-Primary Button → Cornflower Blue 500
-Secondary Button → Dusk Blue 500
-Borders → Soft Linen 300
-Text → Dusk Blue 800–900
-Muted Text → Dusk Blue 500
-Success/Calm UI → Dry Sage 300–500
-Info States → Baby Blue Ice 100–300
--->

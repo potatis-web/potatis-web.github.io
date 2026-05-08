@@ -4,12 +4,13 @@
   import { logIn, signUp, getCurrentUser } from '$lib/auth.js';
   import { onMount } from 'svelte';
   import waveBG from '$lib/stacked-waves-haikei.svg'
-
+  import Notification from '$lib/Notification.svelte';
   // import { slide } from 'svelte/transition'; // remove if unused later
 
   let loginState = $state(false);
   let email = $state();
   let password = $state();
+  let notifications = $state([]);
 
   onMount(async () => {
     const user = await getCurrentUser();
@@ -31,8 +32,9 @@
 
     if (response.success) {
       goto(resolve('/dashboard'));
+    } else {
+      makeNotification(response.error, "error");
     }
-    
   }
 
   function getMode(state = loginState) {
@@ -43,6 +45,13 @@
 
 
   }
+
+  function makeNotification(text, type = 'info') {
+		const obj = { text: text, id: Date.now(), type: type };
+		notifications.push(obj);
+		setTimeout(() => notifications.shift(), 5000);
+	}
+
 </script>
 <title>{getMode()} - Quizmaker.gg</title>
 <main class="fixed inset-0 flex justify-center items-center">
@@ -73,3 +82,9 @@
   </form>
 </main>
 
+<!--Notifications-->
+<aside class="fixed right-4 bottom-4 flex flex-col gap-4">
+	{#each notifications as not (not.id)}
+		<Notification text={not.text} type={not.type} />
+	{/each}
+</aside>
