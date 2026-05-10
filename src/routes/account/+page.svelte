@@ -10,6 +10,7 @@
 	let loginState = $state(true);
 	let email = $state();
 	let password = $state();
+  let confirmPassword = $state();
 	let notifications = $state([]);
 
 	onMount(async () => {
@@ -24,9 +25,12 @@
 		e.preventDefault();
 		let response;
 		if (loginState) {
-			response = await logIn(email, password);
+			  response = await logIn(email, password);
 		} else {
-			response = await signUp(email, password);
+      if (confirmPassword === password) {
+        response = await signUp(email, password);
+      }
+			
 		}
 		console.log(response);
 
@@ -60,7 +64,7 @@
 	>
 		<h1 class="heading border-b-2 p-2">{getMode()}</h1>
 		<div class="field-wrapper">
-			<label for="email">E-Mail:</label>
+			<label for="email" class="required">E-Mail:</label>
 			<input
 				required
 				placeholder="example@email.com"
@@ -73,7 +77,7 @@
 		</div>
 
 		<div class="field-wrapper">
-			<label for="password" class="">Password:</label>
+			<label for="password" class="required">Password:</label>
 			<input
 				required
 				placeholder="●●●●●●●●"
@@ -84,7 +88,20 @@
 				oninput={validateForm}
 			/>
 		</div>
-
+    {#if !loginState}
+      <div class="field-wrapper">
+        <label for="password-confirm" class="required">Confirm password:</label>
+        <input
+          required
+          placeholder="●●●●●●●●"
+          id="password-confirm"
+          type="password"
+          class="input-field"
+          bind:value={confirmPassword}
+          oninput={validateForm}
+        />
+      </div>
+    {/if}
 		<div class="field-wrapper justify-end">
 			<input type="submit" id="submit" value={getMode()} class="btn-primary" />
 		</div>

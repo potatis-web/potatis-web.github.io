@@ -3,9 +3,10 @@
 	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
 	import Notification from '$lib/Notification.svelte';
-	import { onAuthStateChange, getCurrentUser, logOut } from '$lib/auth';
+	import { onAuthStateChange, logOut } from '$lib/auth';
 	import { fade } from 'svelte/transition';
-	import { getMyQuizzes } from '$lib/quizManager';
+	import { getMyQuizzes, createQuiz } from '$lib/quizManager';
+	/*
 	const quizTemplate = {
 		name: 'New Quiz',
 		description: 'A short description goes here',
@@ -20,6 +21,7 @@
 			},
 		],
 	};
+	*/
 	let selectedIndex = $state();
 	let user = $state(null);
 	let notifications = $state([]);
@@ -27,6 +29,9 @@
 	let modalOpen = $state(false);
 	let ql = $state();
 	const letterFormat = (s) => {return s.slice(0,1).toUpperCase()}
+
+	let qn = $state();
+	let qd = $state();
 
 	onMount(() => {
 		const {
@@ -51,6 +56,15 @@
 		loading = false;
 	}
 
+	function handleCreateQuiz() {
+		const quizData = {
+			name: qn,
+			description: qn,
+			questions: [
+				
+			]
+		}
+	}
 	function makeNotification(text, type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
 		notifications.push(obj);
@@ -117,6 +131,7 @@
 			</svg>
 			<span>Add Quiz</span>
 		</button>
+
 		<button class="btn-primary sort-icon" onclick={makeNotification()} disabled={loading}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -134,6 +149,7 @@
 			</svg>
 			<span>Edit Quiz</span>
 		</button>
+
 		<button class="btn-primary sort-icon" onclick={makeNotification()} disabled={loading}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -189,6 +205,7 @@
 </div>
 
 <!--svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions-->
+
 <!--Modal-->
 {#if modalOpen}
 	<div
@@ -200,14 +217,25 @@
 		transition:fade
 	>
 		<div onclick={(e) => e.stopPropagation()} class="modal-panel">
-			<form class="flex flex-col gap-4">
-				<div class="flex items-center">
-					<span class="heading self-start">Make a quiz</span>
-					<button class="btn-primary" onclick={() => (modalOpen = false)}>X</button>
+			<form class="flex flex-col gap-4" onsubmit={handleCreateQuiz}>
+				<div class="flex items-center justify-between">
+					<span class="heading">Create quiz</span>
+					<button class="btn-primary" aria-label="close modal" onclick={() => (modalOpen = false)}>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+							stroke="currentColor"
+							class="size-6"
+						>
+							<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+						</svg>
+					</button>
 				</div>
 				<div class="field-wrapper">
 					<label for="qn">Quiz name:</label>
-					<input id="qn" type="text" placeholder="New Quiz" class="input-field" />
+					<input id="qn" type="text" placeholder="New Quiz" class="input-field" bind:value={qn} />
 				</div>
 				<div class="field-wrapper">
 					<label for="qd" class="">Quiz description:</label>
@@ -216,7 +244,12 @@
 						placeholder="A short description goes here"
 						class="input-field resize-none"
 						rows="2"
+						bind:value={qd}
 					></textarea>
+				</div>
+
+				<div class="field-wrapper">
+					<input type="submit" value="Create" class="btn-primary">
 				</div>
 			</form>
 		</div>

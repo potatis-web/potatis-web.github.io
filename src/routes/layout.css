@@ -60,6 +60,10 @@
 	.anim-underline {
 		@apply absolute bottom-0 h-1 w-0 bg-dusk-blue-800 transition-all group-hover:w-51/100;
 	}
+
+  .required {
+    @apply after:ml-0.5 after:text-red-500 after:content-['*']
+  }
 }
 
 @theme {
