@@ -25,7 +25,7 @@
 		e.preventDefault();
 		let response;
 		if (loginState) {
-			  response = await logIn(email, password);
+			response = await logIn(email, password);
 		} else {
       if (confirmPassword === password) {
         response = await signUp(email, password);
@@ -59,7 +59,7 @@
 	<img src={waveBG} alt="background" class="fixed" />
 
 	<form
-		class="relative z-10 flex h-4/5 w-1/3 animate-fade-in flex-col gap-4 rounded-2xl bg-soft-linen-100 p-8 shadow"
+		class="relative z-10 flex h-4/5 w-1/3 animate-fade-in flex-col gap-4 rounded-2xl bg-soft-linen-100 dark:bg-dark-100 p-8 shadow"
 		onsubmit={handleSubmit}
 	>
 		<h1 class="heading border-b-2 p-2">{getMode()}</h1>

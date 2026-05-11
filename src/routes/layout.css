@@ -2,7 +2,15 @@
 
 @layer components {
 	.btn-primary {
-		@apply cursor-pointer rounded-[99999px] border border-soft-linen-300 px-3 py-2 text-dusk-blue-800 shadow transition-all hover:bg-soft-linen-300 hover:text-dusk-blue-100 active:scale-95;
+		@apply cursor-pointer shadow px-3 py-2 
+		bg-soft-linen-100 dark:bg-dark-100 
+		border border-soft-linen-300  rounded-[99999px]   dark:border-dark-300 
+		text-dusk-blue-800 dark:text-dusk-blue-100 
+		
+		hover:bg-soft-linen-300 dark:hover:bg-dark-300 
+		active:scale-95
+		
+		transition-all;
 	}
 
 	.btn-secondary {
@@ -54,7 +62,7 @@
 	}
 
 	.heading {
-		@apply text-xl font-semibold text-dusk-blue-900;
+		@apply text-xl font-semibold text-dusk-blue-900 dark:text-dusk-blue-100;
 	}
 
 	.anim-underline {
@@ -94,17 +102,23 @@
 	--color-soft-linen-900: oklch(22.99% 0.017 97.01);
 	--color-soft-linen-950: oklch(19.14% 0.012 91.79);
 
-	--color-soft-linen-dark-50: oklch(10% 0.012 97.35);
-	--color-soft-linen-dark-100: oklch(15% 0.018 96.43);
-	--color-soft-linen-dark-200: oklch(20% 0.025 94.77);
-	--color-soft-linen-dark-300: oklch(25% 0.032 93.41);
-	--color-soft-linen-dark-400: oklch(30% 0.04 94.38);
-	--color-soft-linen-dark-500: oklch(35% 0.048 94.2);
-	--color-soft-linen-dark-600: oklch(40% 0.05 94.44);
-	--color-soft-linen-dark-700: oklch(50% 0.045 93.55);
-	--color-soft-linen-dark-800: oklch(60% 0.035 95.14);
-	--color-soft-linen-dark-900: oklch(70% 0.025 97.01);
-	--color-soft-linen-dark-950: oklch(75% 0.02 91.79);
+	/* Light values (50-300) become dark values (900-700) */
+  --color-dark-50: oklch(19.14% 0.012 91.79);
+  --color-dark-100: oklch(22.99% 0.017 97.01);
+  --color-dark-200: oklch(34.8% 0.032 95.14);
+  --color-dark-300: oklch(45.35% 0.042 93.55);
+  
+  /* Mid-range values */
+  --color-dark-400: oklch(55.53% 0.053 94.44);
+  --color-dark-500: oklch(65.35% 0.065 94.2);
+  --color-dark-600: oklch(72.43% 0.051 94.38);
+  --color-dark-700: oklch(79.46% 0.038 93.41);
+  
+  /* Dark values (800-950) become light values (200-50) */
+  --color-dark-800: oklch(86.57% 0.026 94.77);
+  --color-dark-900: oklch(93.31% 0.012 96.43);
+  --color-dark-950: oklch(96.65% 0.007 97.35);
+
 
 	--color-dusk-blue-50: oklch(95.44% 0.012 264.51);
 	--color-dusk-blue-100: oklch(90.88% 0.025 265.58);

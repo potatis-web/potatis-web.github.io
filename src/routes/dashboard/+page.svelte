@@ -26,7 +26,8 @@
 	let user = $state(null);
 	let notifications = $state([]);
 	let loading = $state(false);
-	let modalOpen = $state(false);
+	let quizModal = $state(false);
+	let accountModal = $state(false)
 	let ql = $state();
 	const letterFormat = (s) => {return s.slice(0,1).toUpperCase()}
 
@@ -60,10 +61,9 @@
 		const quizData = {
 			name: qn,
 			description: qn,
-			questions: [
-				
-			]
+			questions: []
 		}
+		
 	}
 	function makeNotification(text, type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
@@ -76,17 +76,25 @@
 <title>Dashboard - Quizmaker.gg</title>
 
 <div
-	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300"
+	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300 dark:*:border-dark-300"
 >
 	<!--Top bar-->
 	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
-		<button class="btn-primary h-12 w-12 bg-soft-linen-50">
-			{#if user?.email}
-				<span class="text-xl">{letterFormat(user?.email)}</span>
-			{/if}
-		</button>
-		<button class="btn-primary" onclick={logOut}>Log out</button>
+		<div class="relative">
+			<div class={`transition-all duration-300 ease-out absolute top-0 right-0 overflow-hidden border-soft-linen-300 bg-soft-linen-200 border rounded-3xl z-20 ${accountModal ? 'w-48 h-36' : 'w-12 h-12'}`}>
+				<button type="button" class="absolute top-0 right-0 h-12 w-12 bg-soft-linen-50   rounded-3xl border border-soft-linen-300 shadow z-30" onclick={() => (accountModal = !accountModal)}>
+					{#if user?.email}
+						<span class="text-xl">{letterFormat(user.email)}</span>
+					{/if}
+				</button>
+				<div class={`absolute top-12 right-1 left-1 p-2 transition-opacity duration-200 ${accountModal ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+					<span class="opacity-75">{user?.email}</span>
+					<button type="button" class="btn-primary w-full" onclick={logOut}>Log out</button>
+				</div>
+			</div>
+		</div>
+		
 	</div>
 
 	<div class="row-span-2 border-t-0">
@@ -118,7 +126,7 @@
 	<!--Quiz management-->
 	<div class="flex items-center gap-4 p-4">
 		<h2 class="">Quizzes</h2>
-		<button class="btn-primary sort-icon" onclick={() => (modalOpen = true)} disabled={loading}>
+		<button class="btn-primary sort-icon" onclick={() => (quizModal = true)} disabled={loading}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -207,12 +215,12 @@
 <!--svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions-->
 
 <!--Modal-->
-{#if modalOpen}
+{#if quizModal}
 	<div
 		class="modal-backdrop flex items-center justify-center"
-		onclick={() => (modalOpen = false)}
+		onclick={() => (quizModal = false)}
 		onkeydown={(e) => {
-			modalOpen = e.key !== 'Escape';
+			quizModal = e.key !== 'Escape';
 		}}
 		transition:fade
 	>
@@ -220,7 +228,7 @@
 			<form class="flex flex-col gap-4" onsubmit={handleCreateQuiz}>
 				<div class="flex items-center justify-between">
 					<span class="heading">Create quiz</span>
-					<button class="btn-primary" aria-label="close modal" onclick={() => (modalOpen = false)}>
+					<button class="btn-primary" aria-label="close modal" onclick={() => (quizModal = false)}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
