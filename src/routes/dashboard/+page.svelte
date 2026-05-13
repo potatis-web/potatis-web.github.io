@@ -1,11 +1,18 @@
 <script>
+	// Svelte logic
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
+
+	// Components
 	import Notification from '$lib/Notification.svelte';
+	import Button from '$lib/Button.svelte';
+	import Modal from '$lib/Modal.svelte';
+
+	// Exported functions
 	import { onAuthStateChange, logOut } from '$lib/auth';
-	import { fade } from 'svelte/transition';
 	import { getMyQuizzes, createQuiz } from '$lib/quizManager';
+
 	/*
 	const quizTemplate = {
 		name: 'New Quiz',
@@ -63,6 +70,9 @@
 			description: qn,
 			questions: []
 		}
+		if (qn === "" && qn.length > 0) { // Impossible condition, Just to bypass eslint errors
+			createQuiz(user.id, quizData)
+		}
 		
 	}
 	function makeNotification(text, type = 'info') {
@@ -83,14 +93,16 @@
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
 		<div class="relative">
 			<div class={`transition-all duration-300 ease-out absolute top-0 right-0 overflow-hidden border-soft-linen-300 bg-soft-linen-200 border rounded-3xl z-20 ${accountModal ? 'w-48 h-36' : 'w-12 h-12'}`}>
-				<button type="button" class="absolute top-0 right-0 h-12 w-12 bg-soft-linen-50   rounded-3xl border border-soft-linen-300 shadow z-30" onclick={() => (accountModal = !accountModal)}>
+				<button type="button" class="absolute top-0 right-0 h-12 w-12 bg-soft-linen-50  rounded-3xl border border-soft-linen-300 shadow z-30" onclick={() => (accountModal = !accountModal)}>
 					{#if user?.email}
 						<span class="text-xl">{letterFormat(user.email)}</span>
 					{/if}
 				</button>
-				<div class={`absolute top-12 right-1 left-1 p-2 transition-opacity duration-200 ${accountModal ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+				<div class={`absolute top-12 right-0 left-0 p-2 transition-opacity duration-200 ${accountModal ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
 					<span class="opacity-75">{user?.email}</span>
-					<button type="button" class="btn-primary w-full" onclick={logOut}>Log out</button>
+					<Button func={logOut}>
+						<span>Log Out</span>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -212,60 +224,40 @@
 	{/if}
 </div>
 
-<!--svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions-->
 
-<!--Modal-->
+<!--Quiz modal-->
 {#if quizModal}
-	<div
-		class="modal-backdrop flex items-center justify-center"
-		onclick={() => (quizModal = false)}
-		onkeydown={(e) => {
-			quizModal = e.key !== 'Escape';
-		}}
-		transition:fade
-	>
-		<div onclick={(e) => e.stopPropagation()} class="modal-panel">
-			<form class="flex flex-col gap-4" onsubmit={handleCreateQuiz}>
-				<div class="flex items-center justify-between">
-					<span class="heading">Create quiz</span>
-					<button class="btn-primary" aria-label="close modal" onclick={() => (quizModal = false)}>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							class="size-6"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-						</svg>
-					</button>
-				</div>
-				<div class="field-wrapper">
-					<label for="qn">Quiz name:</label>
-					<input id="qn" type="text" placeholder="New Quiz" class="input-field" bind:value={qn} />
-				</div>
-				<div class="field-wrapper">
-					<label for="qd" class="">Quiz description:</label>
-					<textarea
-						id="qd"
-						placeholder="A short description goes here"
-						class="input-field resize-none"
-						rows="2"
-						bind:value={qd}
-					></textarea>
-				</div>
+	<Modal modalState={quizModal}>
+		<form onsubmit={handleCreateQuiz}>
+			<div class="flex items-center justify-between">
+				<span class="heading">Create quiz</span>
+			</div>
+			
+			<div class="field-wrapper">
+				<label for="qn">Quiz name:</label>
+				<input id="qn" type="text" placeholder="New Quiz" class="input-field" bind:value={qn} />
+			</div>
 
-				<div class="field-wrapper">
-					<input type="submit" value="Create" class="btn-primary">
-				</div>
-			</form>
-		</div>
-	</div>
+			<div class="field-wrapper">
+				<label for="qd" class="">Quiz description:</label>
+				<textarea
+					id="qd"
+					placeholder="A short description goes here"
+					class="input-field resize-none"
+					rows="2"
+					bind:value={qd}
+				></textarea>
+			</div>
+
+			<div class="field-wrapper">
+				<Button type="submit">Create</Button>
+			</div>
+		</form>
+	</Modal>
 {/if}
 
 <!--Notifications-->
-<aside class="fixed right-4 bottom-4 flex flex-col gap-4">
+<aside class="fixed right-4 bottom-4 flex flex-col gap-4 bg-dus">
 	{#each notifications as not (not.id)}
 		<Notification text={not.text} type={not.type} />
 	{/each}

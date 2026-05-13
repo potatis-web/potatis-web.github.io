@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import waveBG from '$lib/stacked-waves-haikei.svg';
 	import Notification from '$lib/Notification.svelte';
+	import Button from '$lib/Button.svelte';
 	// import { slide } from 'svelte/transition'; // remove if unused later
 
 	let loginState = $state(true);
@@ -59,10 +60,11 @@
 	<img src={waveBG} alt="background" class="fixed" />
 
 	<form
-		class="relative z-10 flex h-4/5 w-1/3 animate-fade-in flex-col gap-4 rounded-2xl bg-soft-linen-100 dark:bg-dark-100 p-8 shadow"
+		class="relative z-10 flex h-4/5 w-1/3 animate-fade-in flex-col gap-4 rounded-2xl bg-soft-linen-100 p-8 shadow"
 		onsubmit={handleSubmit}
 	>
 		<h1 class="heading border-b-2 p-2">{getMode()}</h1>
+		
 		<div class="field-wrapper">
 			<label for="email" class="required">E-Mail:</label>
 			<input
@@ -103,7 +105,7 @@
       </div>
     {/if}
 		<div class="field-wrapper justify-end">
-			<input type="submit" id="submit" value={getMode()} class="btn-primary" />
+			<Button type="submit">{getMode()}</Button>
 		</div>
 
 		<div class="absolute bottom-8">
@@ -121,7 +123,7 @@
 
 <!--Notifications-->
 <aside class="fixed right-4 bottom-4 flex flex-col gap-4">
-	{#each notifications as not (not.id)}
-		<Notification text={not.text} type={not.type} />
+	{#each notifications as notification (notification.id)}
+		<Notification text={notification.text} type={notification.type} />
 	{/each}
 </aside>

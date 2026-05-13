@@ -3,13 +3,13 @@
 @layer components {
 	.btn-primary {
 		@apply cursor-pointer shadow px-3 py-2 
-		bg-soft-linen-100 dark:bg-dark-100 
-		border border-soft-linen-300  rounded-[99999px]   dark:border-dark-300 
-		text-dusk-blue-800 dark:text-dusk-blue-100 
+		bg-soft-linen-100 
+		border border-soft-linen-300  rounded-[99999px] 
+		text-dusk-blue-800 
 		
-		hover:bg-soft-linen-300 dark:hover:bg-dark-300 
+		hover:bg-soft-linen-300
 		active:scale-95
-		
+
 		transition-all;
 	}
 
@@ -62,7 +62,7 @@
 	}
 
 	.heading {
-		@apply text-xl font-semibold text-dusk-blue-900 dark:text-dusk-blue-100;
+		@apply text-xl font-semibold text-dusk-blue-900;
 	}
 
 	.anim-underline {
