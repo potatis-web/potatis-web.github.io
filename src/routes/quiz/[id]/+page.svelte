@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import Notification from '$lib/Notification.svelte';
+	import Notification from '$lib/components/Notification.svelte';
 
 	const questionTemplate = {
 		title: 'Sample question?',

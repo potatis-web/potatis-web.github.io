@@ -1,13 +1,21 @@
 <script>
+	// Svelte logic
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { logIn, signUp, getCurrentUser } from '$lib/auth.js';
 	import { onMount } from 'svelte';
-	import waveBG from '$lib/stacked-waves-haikei.svg';
-	import Notification from '$lib/Notification.svelte';
-	import Button from '$lib/Button.svelte';
 	// import { slide } from 'svelte/transition'; // remove if unused later
 
+	// Components
+	import Notification from '$lib/components/Notification.svelte';
+	import Button from '$lib/components/Button.svelte';
+
+	// Assets
+	import waveBG from '$lib/assets/stacked-waves-haikei.svg';
+	
+	// Services
+	import { logIn, signUp, getCurrentUser } from '$lib/services/auth.js';
+
+	// Variables
 	let loginState = $state(true);
 	let email = $state();
 	let password = $state();
@@ -48,7 +56,7 @@
 
 	function validateForm() {}
 
-	function makeNotification(text, type = 'info') {
+	function makeNotification(text = "Placeholder", type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
 		notifications.push(obj);
 		setTimeout(() => notifications.shift(), 5000);
@@ -60,7 +68,7 @@
 	<img src={waveBG} alt="background" class="fixed" />
 
 	<form
-		class="relative z-10 flex h-4/5 w-1/3 animate-fade-in flex-col gap-4 rounded-2xl bg-soft-linen-100 p-8 shadow"
+		class="relative z-10 flex h-4/5 w-1/3 animate-fade-in motion-reduce:animation-none flex-col gap-4 rounded-2xl bg-soft-linen-100 p-8 shadow"
 		onsubmit={handleSubmit}
 	>
 		<h1 class="heading border-b-2 p-2">{getMode()}</h1>

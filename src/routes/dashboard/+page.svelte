@@ -5,15 +5,21 @@
 	import { goto } from '$app/navigation';
 
 	// Components
-	import Notification from '$lib/Notification.svelte';
-	import Button from '$lib/Button.svelte';
-	import Modal from '$lib/Modal.svelte';
+	import Notification from '$lib/components/Notification.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 
-	// Exported functions
-	import { onAuthStateChange, logOut } from '$lib/auth';
-	import { getMyQuizzes, createQuiz } from '$lib/quizManager';
+	// Assets
+	import Cross from '$lib/assets/cross.svg';
+	import Plus from '$lib/assets/plus.svg';
+	import Pen from '$lib/assets/pen.svg'
+
+	// Services
+	import { onAuthStateChange, logOut } from '$lib/services/auth';
+	import { getMyQuizzes, createQuiz } from '$lib/services/quizManager';
 
 	/*
+	// Structure
 	const quizTemplate = {
 		name: 'New Quiz',
 		description: 'A short description goes here',
@@ -29,18 +35,40 @@
 		],
 	};
 	*/
-	let selectedIndex = $state();
+	// Constants
+	const makeNotification = function(e, text = "Placeholder", type = 'info') {
+		const obj = { text: text, id: Date.now(), type: type };
+		notifications.push(obj);
+		setTimeout(() => notifications.shift(), 5000);
+	}
+	const buttons = [
+		{text: "Add quiz", func: () => quizModal = true, icon: Plus, idx: 1},
+		{text: "Edit quiz", func: makeNotification, icon: Pen, idx: 2},
+		{text: "Delete quiz", func: makeNotification, icon: Cross, idx: 3},
+	];
+	const links = [
+		{text: 'Home', path: '/'},
+		{text: 'Account', path: '/account'},
+		{text: 'Devlog', path: '/devlog'},
+	];
+	// Variables 
 	let user = $state(null);
 	let notifications = $state([]);
+	let ql = $state();
+
+	// State
 	let loading = $state(false);
 	let quizModal = $state(false);
-	let accountModal = $state(false)
-	let ql = $state();
-	const letterFormat = (s) => {return s.slice(0,1).toUpperCase()}
+	let accountPopup = $state(false);
+	let selectedIndex = $state();
+	
+
+	const letterFormat = (s) => {return s.slice(0,1).toUpperCase()};
 
 	let qn = $state();
 	let qd = $state();
 
+	
 	onMount(() => {
 		const {
 			data: { subscription },
@@ -75,11 +103,7 @@
 		}
 		
 	}
-	function makeNotification(text, type = 'info') {
-		const obj = { text: text, id: Date.now(), type: type };
-		notifications.push(obj);
-		setTimeout(() => notifications.shift(), 5000);
-	}
+
 
 </script>
 
@@ -92,13 +116,13 @@
 	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
 		<div class="relative">
-			<div class={`transition-all duration-300 ease-out absolute top-0 right-0 overflow-hidden border-soft-linen-300 bg-soft-linen-200 border rounded-3xl z-20 ${accountModal ? 'w-48 h-36' : 'w-12 h-12'}`}>
-				<button type="button" class="absolute top-0 right-0 h-12 w-12 bg-soft-linen-50  rounded-3xl border border-soft-linen-300 shadow z-30" onclick={() => (accountModal = !accountModal)}>
+			<div class={`transition-all duration-300 ease-out absolute top-0 right-0 overflow-hidden border-soft-linen-300 bg-soft-linen-100 border rounded-3xl z-20 ${accountPopup ? 'w-52 h-36' : 'w-12 h-12'}`}>
+				<button type="button" class="absolute -top-px -right-px h-12 w-12 bg-soft-linen-50  rounded-3xl border border-soft-linen-300 shadow z-30 cursor-pointer hover:bg-soft-linen-200 transition" onclick={() => (accountPopup = !accountPopup)}>
 					{#if user?.email}
 						<span class="text-xl">{letterFormat(user.email)}</span>
 					{/if}
 				</button>
-				<div class={`absolute top-12 right-0 left-0 p-2 transition-opacity duration-200 ${accountModal ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+				<div class={`absolute top-12 right-0 left-0 p-4 transition-opacity duration-200 ${accountPopup ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
 					<span class="opacity-75">{user?.email}</span>
 					<Button func={logOut}>
 						<span>Log Out</span>
@@ -111,78 +135,27 @@
 
 	<div class="row-span-2 border-t-0">
 		<nav class="flex flex-col items-center gap-4 p-4">
-			<a href={resolve('/')} class="group heading relative px-4 py-2 active:bg-black/10">
-				<span>Home</span>
-				<div>
-					<i class="anim-underline left-0"></i>
-					<i class="anim-underline right-0"></i>
-				</div>
-			</a>
-			<a href={resolve('/account')} class="group heading relative px-4 py-2 active:bg-black/10">
-				<span>Account</span>
-				<div>
-					<i class="anim-underline left-0"></i>
-					<i class="anim-underline right-0"></i>
-				</div>
-			</a>
-			<a href={resolve('/devlog')} class="group heading relative px-4 py-2 active:bg-black/10">
-				<span>Devlog</span>
-				<div>
-					<i class="anim-underline left-0"></i>
-					<i class="anim-underline right-0"></i>
-				</div>
-			</a>
+			{#each links as link (link.path)}
+				<a href={resolve(link.path)} class="group heading relative px-4 py-2 active:bg-black/10">
+					<span>{link.text}</span>
+					<div>
+						<i class="anim-underline left-0"></i>
+						<i class="anim-underline right-0"></i>
+					</div>
+				</a>
+			{/each}
 		</nav>
 	</div>
 
 	<!--Quiz management-->
 	<div class="flex items-center gap-4 p-4">
 		<h2 class="">Quizzes</h2>
-		<button class="btn-primary sort-icon" onclick={() => (quizModal = true)} disabled={loading}>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="size-5"
-			>
-				<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-			</svg>
-			<span>Add Quiz</span>
-		</button>
-
-		<button class="btn-primary sort-icon" onclick={makeNotification()} disabled={loading}>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="size-5"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
-				/>
-			</svg>
-			<span>Edit Quiz</span>
-		</button>
-
-		<button class="btn-primary sort-icon" onclick={makeNotification()} disabled={loading}>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="size-5"
-			>
-				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-			</svg>
-			<span>Delete Quiz</span>
-		</button>
+		{#each buttons as btn (btn.idx)}
+			<Button func={btn.func} disabled={loading} class="sort-icon">
+				<img src={btn.icon} class="size-6 inline" alt={btn.text}>
+				{btn.text}
+			</Button>
+		{/each}
 	</div>
 	{#if ql}
 		{#if ql.length === 0}
@@ -192,7 +165,7 @@
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
 						fill="currentColor"
-						class="size-1/4 text-dusk-blue-800"
+						class="size-1/4 text-dusk-blue-800/70"
 					>
 						<path
 							fill-rule="evenodd"
@@ -227,7 +200,7 @@
 
 <!--Quiz modal-->
 {#if quizModal}
-	<Modal modalState={quizModal}>
+	<Modal bind:modalState={quizModal}>
 		<form onsubmit={handleCreateQuiz}>
 			<div class="flex items-center justify-between">
 				<span class="heading">Create quiz</span>
@@ -257,7 +230,7 @@
 {/if}
 
 <!--Notifications-->
-<aside class="fixed right-4 bottom-4 flex flex-col gap-4 bg-dus">
+<aside class="fixed right-4 bottom-4 flex flex-col gap-4">
 	{#each notifications as not (not.id)}
 		<Notification text={not.text} type={not.type} />
 	{/each}
