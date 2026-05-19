@@ -108,7 +108,7 @@
 <title>Dashboard - Quizmaker.gg</title>
 
 <div
-	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300 dark:*:border-dark-300"
+	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300"
 >
 	<!--Top bar-->
 	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
@@ -117,6 +117,7 @@
 			<div
 				class={`absolute top-0 right-0 z-20 overflow-hidden rounded-3xl border border-soft-linen-300 bg-soft-linen-100 transition-all duration-300 ease-out ${accountPopup ? 'h-36 w-52' : 'h-12 w-12'}`}
 			>
+				<!--Account button-->
 				<button
 					type="button"
 					class="absolute -top-px -right-px z-30 h-12 w-12 cursor-pointer rounded-3xl border border-soft-linen-300 bg-soft-linen-50 shadow transition hover:bg-soft-linen-200"
@@ -127,7 +128,7 @@
 					{/if}
 				</button>
 				<div
-					class={`absolute top-12 right-0 left-0 p-4 transition-opacity duration-200 ${accountPopup ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+					class={`absolute top-12 right-0 left-0 p-4 transition-opacity duration-200 flex flex-col gap-2 ${accountPopup ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
 				>
 					<span class="opacity-75">{user?.email}</span>
 					<Button func={logOut}>

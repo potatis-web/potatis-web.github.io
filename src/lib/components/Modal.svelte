@@ -16,7 +16,7 @@
     >
     </div>
     <!--svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions-->
-    <div class="relative w-full max-w-3xl rounded-3xl border border-soft-linen-300 bg-soft-linen-100 p-6 shadow-2xl" onclick={(e) => e.stopPropagation()}>
+    <div class="relative w-full max-w-3xl max-h-11/12 rounded-3xl border border-soft-linen-300 bg-soft-linen-100 p-6 shadow-2xl" onclick={(e) => e.stopPropagation()}>
       <Button class="absolute top-6 right-6 size-12" ariaLabel="Close modal" func={() => modalState = false}>
         <svg
             xmlns="http://www.w3.org/2000/svg"
