@@ -137,7 +137,7 @@
 			</div>
 		</div>
 	</div>
-
+	<!--Side links-->
 	<div class="row-span-2 border-t-0">
 		<nav class="flex flex-col items-center gap-4 p-4">
 			{#each links as link (link.path)}
@@ -152,7 +152,7 @@
 		</nav>
 	</div>
 
-	<!--Quiz management-->
+	<!--Quiz management bar-->
 	<div class="flex items-center gap-4 p-4">
 		<h2 class="">Quizzes</h2>
 		{#each buttons as btn (btn.idx)}
@@ -162,6 +162,8 @@
 			</Button>
 		{/each}
 	</div>
+
+	<!--Quizzes-->
 	{#if ql}
 		{#if ql.length === 0}
 			<div class="flex h-full items-center justify-center self-center">
@@ -221,7 +223,7 @@
 					id="qd"
 					placeholder="A short description goes here"
 					class="input-field resize-none"
-					rows="2"
+					rows="3"
 					bind:value={qd}
 				></textarea>
 			</div>
