@@ -12,7 +12,7 @@
 	// Assets
 	import Cross from '$lib/assets/cross.svg';
 	import Plus from '$lib/assets/plus.svg';
-	import Pen from '$lib/assets/pen.svg'
+	import Pen from '$lib/assets/pen.svg';
 
 	// Services
 	import { onAuthStateChange, logOut } from '$lib/services/auth';
@@ -36,22 +36,22 @@
 	};
 	*/
 	// Constants
-	const makeNotification = function(e, text = "Placeholder", type = 'info') {
+	const makeNotification = function (e, text = 'Placeholder', type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
 		notifications.push(obj);
 		setTimeout(() => notifications.shift(), 5000);
-	}
+	};
 	const buttons = [
-		{text: "Add quiz", func: () => quizModal = true, icon: Plus, idx: 1},
-		{text: "Edit quiz", func: makeNotification, icon: Pen, idx: 2},
-		{text: "Delete quiz", func: makeNotification, icon: Cross, idx: 3},
+		{ text: 'Add quiz', func: () => (quizModal = true), icon: Plus, idx: 1 },
+		{ text: 'Edit quiz', func: makeNotification, icon: Pen, idx: 2 },
+		{ text: 'Delete quiz', func: makeNotification, icon: Cross, idx: 3 },
 	];
 	const links = [
-		{text: 'Home', path: '/'},
-		{text: 'Account', path: '/account'},
-		{text: 'Devlog', path: '/devlog'},
+		{ text: 'Home', path: '/' },
+		{ text: 'Account', path: '/account' },
+		{ text: 'Devlog', path: '/devlog' },
 	];
-	// Variables 
+	// Variables
 	let user = $state(null);
 	let notifications = $state([]);
 	let ql = $state();
@@ -61,14 +61,14 @@
 	let quizModal = $state(false);
 	let accountPopup = $state(false);
 	let selectedIndex = $state();
-	
 
-	const letterFormat = (s) => {return s.slice(0,1).toUpperCase()};
+	const letterFormat = (s) => {
+		return s.slice(0, 1).toUpperCase();
+	};
 
 	let qn = $state();
 	let qd = $state();
 
-	
 	onMount(() => {
 		const {
 			data: { subscription },
@@ -96,15 +96,13 @@
 		const quizData = {
 			name: qn,
 			description: qn,
-			questions: []
+			questions: [],
+		};
+		if (qn === '' && qn.length > 0) {
+			// Impossible condition, Just to bypass eslint errors
+			createQuiz(user.id, quizData);
 		}
-		if (qn === "" && qn.length > 0) { // Impossible condition, Just to bypass eslint errors
-			createQuiz(user.id, quizData)
-		}
-		
 	}
-
-
 </script>
 
 <title>Dashboard - Quizmaker.gg</title>
@@ -116,13 +114,21 @@
 	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
 		<div class="relative">
-			<div class={`transition-all duration-300 ease-out absolute top-0 right-0 overflow-hidden border-soft-linen-300 bg-soft-linen-100 border rounded-3xl z-20 ${accountPopup ? 'w-52 h-36' : 'w-12 h-12'}`}>
-				<button type="button" class="absolute -top-px -right-px h-12 w-12 bg-soft-linen-50  rounded-3xl border border-soft-linen-300 shadow z-30 cursor-pointer hover:bg-soft-linen-200 transition" onclick={() => (accountPopup = !accountPopup)}>
+			<div
+				class={`absolute top-0 right-0 z-20 overflow-hidden rounded-3xl border border-soft-linen-300 bg-soft-linen-100 transition-all duration-300 ease-out ${accountPopup ? 'h-36 w-52' : 'h-12 w-12'}`}
+			>
+				<button
+					type="button"
+					class="absolute -top-px -right-px z-30 h-12 w-12 cursor-pointer rounded-3xl border border-soft-linen-300 bg-soft-linen-50 shadow transition hover:bg-soft-linen-200"
+					onclick={() => (accountPopup = !accountPopup)}
+				>
 					{#if user?.email}
 						<span class="text-xl">{letterFormat(user.email)}</span>
 					{/if}
 				</button>
-				<div class={`absolute top-12 right-0 left-0 p-4 transition-opacity duration-200 ${accountPopup ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+				<div
+					class={`absolute top-12 right-0 left-0 p-4 transition-opacity duration-200 ${accountPopup ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+				>
 					<span class="opacity-75">{user?.email}</span>
 					<Button func={logOut}>
 						<span>Log Out</span>
@@ -130,7 +136,6 @@
 				</div>
 			</div>
 		</div>
-		
 	</div>
 
 	<div class="row-span-2 border-t-0">
@@ -152,7 +157,7 @@
 		<h2 class="">Quizzes</h2>
 		{#each buttons as btn (btn.idx)}
 			<Button func={btn.func} disabled={loading} class="sort-icon">
-				<img src={btn.icon} class="size-6 inline" alt={btn.text}>
+				<img src={btn.icon} class="inline size-6" alt={btn.text} />
 				{btn.text}
 			</Button>
 		{/each}
@@ -197,15 +202,14 @@
 	{/if}
 </div>
 
-
 <!--Quiz modal-->
 {#if quizModal}
 	<Modal bind:modalState={quizModal}>
-		<form onsubmit={handleCreateQuiz}>
+		<form onsubmit={handleCreateQuiz} class="flex flex-col gap-2">
 			<div class="flex items-center justify-between">
 				<span class="heading">Create quiz</span>
 			</div>
-			
+
 			<div class="field-wrapper">
 				<label for="qn">Quiz name:</label>
 				<input id="qn" type="text" placeholder="New Quiz" class="input-field" bind:value={qn} />
