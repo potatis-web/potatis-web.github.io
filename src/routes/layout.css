@@ -62,11 +62,11 @@
 	}
 
 	.heading {
-		@apply text-xl font-semibold text-dusk-blue-900;
+		@apply text-xl font-semibold text-dusk-blue-900 dark:text-soft-linen-200;
 	}
 
 	.anim-underline {
-		@apply absolute bottom-0 h-1 w-0 bg-dusk-blue-800 transition-all group-hover:w-51/100;
+		@apply absolute bottom-0 h-1 w-0 bg-dusk-blue-800 dark:bg-soft-linen-200 transition-all group-hover:w-51/100;
 	}
 
   .required {

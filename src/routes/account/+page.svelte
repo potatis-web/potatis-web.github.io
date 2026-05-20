@@ -8,6 +8,7 @@
 	// Components
 	import Notification from '$lib/components/Notification.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import Card from '$lib/components/Card.svelte';
 
 	// Assets
 	import waveBG from '$lib/assets/stacked-waves-haikei.svg';
@@ -66,67 +67,68 @@
 <title>{getMode()} - Quizmaker.gg</title>
 <main class="fixed inset-0 flex items-center justify-center">
 	<img src={waveBG} alt="background" class="fixed" />
+	<Card>
+		<form
+			class="relative flex motion-reduce:animation-none flex-col gap-4"
+			onsubmit={handleSubmit}
+		>
+			<h1 class="heading border-b-2 p-2">{getMode()}</h1>
+			
+			<div class="field-wrapper">
+				<label for="email" class="required">E-Mail:</label>
+				<input
+					required
+					placeholder="example@email.com"
+					id="email"
+					type="email"
+					class="input-field"
+					bind:value={email}
+					oninput={validateForm}
+				/>
+			</div>
 
-	<form
-		class="relative z-10 flex h-4/5 w-1/3 animate-fade-in motion-reduce:animation-none flex-col gap-4 rounded-2xl bg-soft-linen-100 p-8 shadow"
-		onsubmit={handleSubmit}
-	>
-		<h1 class="heading border-b-2 p-2">{getMode()}</h1>
-		
-		<div class="field-wrapper">
-			<label for="email" class="required">E-Mail:</label>
-			<input
-				required
-				placeholder="example@email.com"
-				id="email"
-				type="email"
-				class="input-field"
-				bind:value={email}
-				oninput={validateForm}
-			/>
-		</div>
+			<div class="field-wrapper">
+				<label for="password" class="required">Password:</label>
+				<input
+					required
+					placeholder="●●●●●●●●"
+					id="password"
+					type="password"
+					class="input-field"
+					bind:value={password}
+					oninput={validateForm}
+				/>
+			</div>
+			{#if !loginState}
+				<div class="field-wrapper">
+					<label for="password-confirm" class="required">Confirm password:</label>
+					<input
+						required
+						placeholder="●●●●●●●●"
+						id="password-confirm"
+						type="password"
+						class="input-field"
+						bind:value={confirmPassword}
+						oninput={validateForm}
+					/>
+				</div>
+			{/if}
+			<div class="field-wrapper justify-end">
+				<Button type="submit">{getMode()}</Button>
+			</div>
 
-		<div class="field-wrapper">
-			<label for="password" class="required">Password:</label>
-			<input
-				required
-				placeholder="●●●●●●●●"
-				id="password"
-				type="password"
-				class="input-field"
-				bind:value={password}
-				oninput={validateForm}
-			/>
-		</div>
-    {#if !loginState}
-      <div class="field-wrapper">
-        <label for="password-confirm" class="required">Confirm password:</label>
-        <input
-          required
-          placeholder="●●●●●●●●"
-          id="password-confirm"
-          type="password"
-          class="input-field"
-          bind:value={confirmPassword}
-          oninput={validateForm}
-        />
-      </div>
-    {/if}
-		<div class="field-wrapper justify-end">
-			<Button type="submit">{getMode()}</Button>
-		</div>
-
-		<div class="absolute bottom-8">
-			<span>{!loginState ? 'Already have an' : 'No '} account?</span>
-			<button
-				class="cursor-pointer underline"
-				onclick={() => {
-					loginState = !loginState;
-				}}>{getMode(!loginState)}</button
-			>
-			<span>instead</span>
-		</div>
-	</form>
+			<div class="absolute bottom-8">
+				<span>{!loginState ? 'Already have an' : 'No '} account?</span>
+				<button
+					class="cursor-pointer underline"
+					onclick={() => {
+						loginState = !loginState;
+					}}>{getMode(!loginState)}</button
+				>
+				<span>instead</span>
+			</div>
+		</form>
+	</Card>
 </main>
 
 <!--Notifications-->

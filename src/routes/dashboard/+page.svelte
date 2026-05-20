@@ -10,9 +10,9 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	// Assets
-	import Cross from '$lib/assets/cross.svg';
-	import Plus from '$lib/assets/plus.svg';
-	import Pen from '$lib/assets/pen.svg';
+	import Plus from '$lib/components/Icons/Plus.svelte';
+	import Pen from '$lib/components/Icons/Pen.svelte';
+	import Cross from '$lib/components/Icons/Cross.svelte';
 
 	// Services
 	import { onAuthStateChange, logOut } from '$lib/services/auth';
@@ -108,19 +108,19 @@
 <title>Dashboard - Quizmaker.gg</title>
 
 <div
-	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300"
+	class="fixed inset-1 grid grid-cols-[250px_1fr] grid-rows-[auto_auto_1fr] gap-1 *:border *:border-soft-linen-300 *:dark:border-dusk-blue-800"
 >
 	<!--Top bar-->
 	<div class=" col-span-2 flex h-full flex-row justify-between border-b-0 p-2">
 		<h1 class="p-2 text-xl font-bold">Quizmaker.gg</h1>
 		<div class="relative">
 			<div
-				class={`absolute top-0 right-0 z-20 overflow-hidden rounded-3xl border border-soft-linen-300 bg-soft-linen-100 transition-all duration-300 ease-out ${accountPopup ? 'h-36 w-52' : 'h-12 w-12'}`}
+				class={`absolute top-0 right-0 z-20 rounded-3xl border border-soft-linen-300 bg-soft-linen-100 dark:bg-dusk-blue-950 dark:border-dusk-blue-800 transition-all duration-300 ease-out ${accountPopup ? 'h-36 w-52' : 'h-12 w-12'}`}
 			>
 				<!--Account button-->
 				<button
 					type="button"
-					class="absolute -top-px -right-px z-30 h-12 w-12 cursor-pointer rounded-3xl border border-soft-linen-300 bg-soft-linen-50 shadow transition hover:bg-soft-linen-200"
+					class="absolute -top-px -right-px z-30 h-12 w-12 cursor-pointer rounded-3xl border border-soft-linen-300 bg-soft-linen-50 dark:bg-dusk-blue-900 dark:hover:bg-dusk-blue-800 dark:border-dusk-blue-800 dark shadow transition hover:bg-soft-linen-200"
 					onclick={() => (accountPopup = !accountPopup)}
 				>
 					{#if user?.email}
@@ -162,7 +162,7 @@
 		<h2 class="">Quizzes</h2>
 		{#each buttons as btn (btn.idx)}
 			<Button func={btn.func} disabled={loading} class="sort-icon">
-				<img src={btn.icon} class="inline size-6" alt={btn.text} />
+				<btn.icon />
 				{btn.text}
 			</Button>
 		{/each}
@@ -177,7 +177,7 @@
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
 						fill="currentColor"
-						class="size-1/4 text-dusk-blue-800/70"
+						class="size-1/4 text-dusk-blue-800/70 dark:text-soft-linen-100"
 					>
 						<path
 							fill-rule="evenodd"

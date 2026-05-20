@@ -91,7 +91,7 @@
   </div>
   <nav class="overflow-y-scroll flex flex-col gap-4">
     {#each devlogs as log (log.title)}
-      <button onclick={() => {currentLog = log; modal = true;}} class="border-2 border-soft-linen-200 w-[50vw] rounded p-6 flex justify-between items-center shadow cursor-pointer">
+      <button onclick={() => {currentLog = log; modal = true;}} class="border-2 border-soft-linen-200 dark:border-dusk-blue-800 w-[50vw] rounded p-6 flex justify-between items-center shadow cursor-pointer">
         <div class="w-3/5 text-ellipsis">
           <h2 class="heading">{log.title}</h2>
           <p>{log.summary}...</p>
