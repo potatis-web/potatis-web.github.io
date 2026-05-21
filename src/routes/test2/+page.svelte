@@ -5,15 +5,17 @@
   let ctx = $derived(canvas.getContext("2d"));
   let screenW;
   let screenH;
+
+  let cameraX = $derived(screenW / 2)
+  let cameraY = $derived(screenH / 2)
+
   let zoom = $state(1.0);
   
   let mouseX;
   let mouseY;
 
   let addStage = 'idle';
-  let newBodyX = 0;
-  let newBodyY = 0;
-  let newBodyRadius = 30;
+  let newBody = $state({});
 
   let bodies = [
     {x: 0, y: 0, radius: 50, velocity: 0, direction: 0},
@@ -30,7 +32,7 @@
   function addBody() {
     if (addStage === 'idle') {
       addStage = 'pick-position';
-      document.addEventListener('click', click);
+      canvas.addEventListener('click', click);
     }
   }
 
@@ -47,37 +49,53 @@
   function mouse(e) {
     mouseX = e.clientX;
     mouseY = e.clientY;
-    
   }
   
   function directionToMouse(pointX, pointY) {
     return Math.atan2(mouseY - pointY, mouseX - pointX);
   }
 
-  function click(e) {
+  function distanceToMouse(pointX, pointY) {
+    const a = pointX - mouseX;
+    const b = pointY - mouseY;
+    return Math.sqrt(a * a + b * b);
+  }
+
+  function click(event) {
     if (addStage === 'pick-position') {
-      newBodyX = e.clientX;
-      newBodyY = e.clientY;
+      newBody.x = event.clientX;
+      newBody.y = event.clientY;
+      addStage = 'pick-radius';
+      return;
+    }
+
+    if (addStage === 'pick-radius') {
+      newBody.radius = distanceToMouse(newBody.x, newBody.y);
       addStage = 'pick-direction';
       return;
     }
 
     if (addStage === 'pick-direction') {
-      const direction = directionToMouse(newBodyX, newBodyY);
-      bodies.push({
-        x: newBodyX - screenW / 2,
-        y: newBodyY - screenH / 2,
-        radius: newBodyRadius,
-        velocity: 5,
-        direction,
-      });
+      newBody.direction = directionToMouse(newBody.x, newBody.y);
+      newBody.velocity = distanceToMouse(newBody.x, newBody.y) / 10;
+
+      const body = {
+        x: newBody.x - cameraX,
+        y: newBody.y - cameraY,
+        radius: newBody.radius,
+        direction: newBody.direction,
+        velocity: newBody.velocity,
+      };
+
+      bodies.push(body);
+      canvas.removeEventListener('click', click);
+      newBody = {};
       addStage = 'idle';
-      document.removeEventListener('click', click);
     }
   }
 
   // Drawing functions
-  function circle(x, y, radius, color = 'white', fill = true) {
+  function circle(x, y, radius,  fill = true, color = 'white') {
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
     ctx.lineWidth = 3
@@ -94,22 +112,27 @@
   function draw() {
     ctx.fillStyle = 'black';
     ctx.fillRect(0,0,screenW,screenH);
-
-    ctx.fillStyle = 'orange';
     
 
     // Drawing bodies
     for (let i = 0; i <= bodies.length - 1; i++) {
       const body = bodies[i];
 
+      
+
+      body.velocity *= 0.99; 
+
+      const relativeX = body.x * zoom + cameraX;
+      const relativeY = body.y * zoom + cameraY;
+      const radius = body.radius * zoom;
+
       body.x += Math.cos(body.direction) * body.velocity;
       body.y += Math.sin(body.direction) * body.velocity;
 
-      body.velocity *= 0.98; 
-
-      const relativeX = body.x * zoom + screenW / 2;
-      const relativeY = body.y * zoom + screenH / 2;
-      const radius = body.radius * zoom;
+      if (distanceToMouse(relativeX, relativeY) <= radius) {
+        circle(relativeX, relativeY, radius + 5, false, 'blue')
+      }
+      
 
       circle(relativeX, relativeY, radius);
     }
@@ -117,15 +140,18 @@
 
     // Draw cursor
     if (addStage !== 'idle') {
-      circle(mouseX, mouseY, 2);
-      if (addStage === 'pick-direction') {
-        circle(newBodyX, newBodyY, 5);
-        const a = newBodyY - mouseY;
-        const b = newBodyX - mouseX;
-        circle(newBodyX, newBodyY, Math.abs(Math.sqrt(a ** 2 + b ** 2)), 'white', false);
-      }
+      circle(mouseX, mouseY, 3);
     }
-
+    if (newBody?.x) {
+      circle(newBody.x, newBody.y, 5)
+      circle(newBody.x, newBody.y, newBody?.radius ?? distanceToMouse(newBody.x, newBody.y), false)
+    }
+    if (newBody?.radius) {
+      ctx.beginPath();
+      ctx.moveTo(newBody.x, newBody.y);
+      ctx.lineTo(mouseX, mouseY);
+      ctx.stroke();
+    }
 
     requestAnimationFrame(draw);
   }
@@ -133,8 +159,11 @@
 
 <canvas bind:this={canvas} ></canvas>
 
+<!--Bottom Left-->
 <div class="fixed bottom-4 left-4 *:border-white *:border">
   <button class="cursor-pointer p-4 " onclick={addBody}> Add</button>
+  <p>Position: {newBody.x} {newBody.y}</p>
+
 </div>
 
 <!--Bottom Right-->
