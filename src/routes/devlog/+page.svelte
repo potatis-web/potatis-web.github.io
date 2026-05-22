@@ -8,6 +8,7 @@
 
 	// Assets
 	import Peak from '$lib/assets/peaks.gif';
+  import Milk from '$lib/assets/milk.gif';
 	import Button from '$lib/components/Button.svelte';
 
 	// Constants
@@ -42,7 +43,39 @@
 			"Lägga till bättre navigation och bekräftelse vid redigering",
 		],
 	};
-	const devlog2 = { title: "bruh", summary: "bruh", image: Peak };
+	const devlog2 = {
+    title: "Devblog - 2",
+    image: Milk, // or whatever image you want to use
+    summary:
+      "Den här sessionen handlade om att integrera Supabase för autentisering och server-baserad quiz-hantering.",
+    updates: [
+      "Installerade och konfigurerade Supabase-klienten",
+      "Implementerade autentisering med registrering, inloggning och utloggning",
+      "Skapade auth-service med sessionshantering",
+      "Implementerade quiz-manager för server-lagring",
+      "Lade till stöd för användarkonton och datapersistens",
+      "Skapade kontosida med bakgrundsgrafik",
+    ],
+    focus:
+      "Målet var att flytta quiz-lagringen från lokal webbläsare till en server-baserad lösning med Supabase, och implementera fullständig användarautentisering.",
+    problems: [
+      "Konfigurering av Supabase-miljövariabler",
+      "Hantering av autentiseringsstatus mellan rutter",
+      "Synkronisering av quiz-data mellan klient och server",
+    ],
+    notes:
+      "Betydande tid investerades i att förstå Supabase-strukturen och hur autentisering fungerar med SvelteKit. Quiz-managerens komplexitet kom från behovet av att hämta och rekonstruera kapslade datastrukturer från flera databastabeller.",
+    learnings:
+      "Supabase gör det enkelt att implementera autentisering och databaskommunikation, men noggrann planering av databasschemat är nödvändig för att undvika överdrivna frågor. Kapslade frågeoperationer kan optimeras genom att hämta all data på en gång och rekonstruera strukturen på klientsidan.",
+    nextSteps: [
+      "Optimera quiz-frågor för att minska antalet databasanrop",
+      "Implementera behörighetskontroll för quiz-åtkomst",
+      "Lägg till felhantering för autentisering",
+      "Testa användarflöde från registrering till quiz-skapande",
+      "Implementera sessionslagring och auto-uppdatering",
+    ],
+  };
+
 	const devlogs = $state([devlog1, devlog2]);
   const func = function() {goto(resolve('/dashboard'))};
 	// State

@@ -17,6 +17,7 @@
 	// Services
 	import { onAuthStateChange, logOut } from '$lib/services/auth';
 	import { getMyQuizzes, createQuiz } from '$lib/services/quizManager';
+	import { isDarkMode } from '$lib/stores/theme';
 
 	/*
 	// Structure
@@ -55,7 +56,7 @@
 	let user = $state(null);
 	let notifications = $state([]);
 	let ql = $state();
-
+	
 	// State
 	let loading = $state(false);
 	let quizModal = $state(false);
@@ -131,8 +132,14 @@
 					class={`absolute top-12 right-0 left-0 p-4 transition-opacity duration-200 flex flex-col gap-2 ${accountPopup ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
 				>
 					<label class="relative inline-block w-16 h-12" for="theme">
-						<input type="checkbox" id="theme" class="sr-only peer">
-						<div class="relative w-9 h-5 bg-neutral-quaternary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-soft dark:peer-focus:ring-brand-soft rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:inset-s-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand"></div>
+						<input 
+							type="checkbox" 
+							id="theme" 
+							class="sr-only peer"
+							checked={$isDarkMode}
+							onchange={(e) => isDarkMode.set(e.target.checked)}
+						>
+						<div class="relative w-9 h-5 bg-neutral-quaternary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-soft dark:peer-focus:ring-brand-soft rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand"></div>
 					</label>
 					<span class="opacity-75 ">{user?.email}</span>
 					<Button func={logOut}>
