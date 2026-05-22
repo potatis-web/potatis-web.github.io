@@ -59,6 +59,16 @@
 		toString() {
 			return `(${this.x}, ${this.y})`;
 		}
+
+		normalize() {
+			const length = this.length;
+			if (length === 0) return new Vector2(0, 0);
+			return new Vector2(this.x / length, this.y / length);
+		}
+
+		dot(Vector2) {
+
+		}
 	}
  
 	class Body {
@@ -96,19 +106,14 @@
  
 	// Canvas dimensions
   let screen = $state(new Vector2(0, 0));
-	let screenW = $state(0);
-	let screenH = $state(0);
  
 	// Camera/zoom
-  let camera = $state(new Vector2(screen.x, screen.y))
-	let cameraX = $state(screen.x / 2);
-	let cameraY = $state(screen.y / 2);
+  let camera = $state(new Vector2(screen.x / 2, screen.y / 2))
+
 	let zoom = $state(1.0);
  
 	// Input tracking
   let mouse = $state(new Vector2(0, 0 ))
-	let mouseX = $state(0);
-	let mouseY = $state(0);
  
 	// Body addition workflow state
 	let addStage = $state('idle'); // 'idle' | 'pick-position' | 'pick-radius' | 'pick-direction'
@@ -126,11 +131,11 @@
 	// ========================================
  
 	function directionToMouse(pointX, pointY) {
-		return Math.atan2(mouseY - pointY, mouseX - pointX);
+		return Math.atan2(mouse.y - pointY, mouse.x - pointX);
 	}
  
-	function distanceToMouse(pointX, pointY) {
-		return Math.hypot(pointX - mouseX, pointY - mouseY);
+	function distanceToMouse(point) {
+		return Math.hypot(point.x - mouse.x, point.y - mouse.y);
 	}
  
 	// ========================================
@@ -138,15 +143,14 @@
 	// ========================================
  
 	function resize() {
-		screenW = window.innerWidth;
-		screenH = window.innerHeight;
-		canvas.setAttribute('width', screenW);
-		canvas.setAttribute('height', screenH);
+		screen.x = window.innerWidth;
+		screen.y = window.innerHeight;
+		canvas.setAttribute('width', screen.x);
+		canvas.setAttribute('height', screen.y);
 	}
  
 	function handleMouseMove(e) {
-		mouseX = e.clientX;
-		mouseY = e.clientY;
+		mouse = new Vector2(e.clientX, e.clientY);
 	}
  
 	function handleAddBody() {
@@ -164,17 +168,17 @@
 		}
  
 		if (addStage === 'pick-radius') {
-			newBody.radius = distanceToMouse(newBody.x, newBody.y);
+			newBody.radius = distanceToMouse(new Vector2(newBody.x, newBody.y));
 			addStage = 'pick-direction';
 			return;
 		}
  
 		if (addStage === 'pick-direction') {
-			newBody.direction = directionToMouse(newBody.x, newBody.y);
-			newBody.velocity = distanceToMouse(newBody.x, newBody.y) / 10;
+			newBody.direction = directionToMouse(new Vector2(newBody.x, newBody.y));
+			newBody.velocity = distanceToMouse(new Vector2(newBody.x, newBody.y)) / 10;
  
 			// Create body in world space
-			const body = new Body(new Vector2(newBody.x - cameraX, newBody.y - cameraY), 100, newBody.radius, newBody.velocity, newBody.direction)
+			const body = new Body(new Vector2(newBody.x - camera.x, newBody.y - camera.y), 100, newBody.radius, newBody.velocity, newBody.direction)
       
 
 			bodies.push(body);
@@ -208,6 +212,7 @@
     ctx.fillStyle = color;
     ctx.fillRect(position.x, position.y, size.x, size.y)
   }
+
 	function drawBodies() {
 		for (let i = 0; i < bodies.length; i++) {
 			const body = bodies[i];
@@ -215,28 +220,30 @@
 
  
 			// Calculate screen position
-			const relativeX = body.x * zoom + cameraX;
-			const relativeY = body.y * zoom + cameraY;
+			const relativeX = body.x * zoom + camera.y;
+			const relativeY = body.y * zoom + camera.y;
 			const radius = body.radius * zoom;
  
 			// Update position
       body.update()
  
-			// Highlight if hovered
-			if (distanceToMouse(relativeX, relativeY) <= radius) {
-				drawCircle(relativeX, relativeY, radius + 3, false, 'blue');
-        
-			}
+			
  
 			// Draw body
 			drawCircle(relativeX, relativeY, radius);
+
+			// Highlight if hovered
+			if (distanceToMouse(relativeX, relativeY) <= radius) {
+				drawCircle(relativeX, relativeY, radius + 3, false, 'blue');
+				drawRect(mouse, new Vector2(100, 100), 'gray')
+			}
 		}
 	}
  
 	function drawAddStageUI() {
 		// Draw cursor marker
 		if (addStage !== 'idle') {
-			drawCircle(mouseX, mouseY, 3);
+			drawCircle(mouse.x, mouse.y, 3);
 		}
  
 		// Draw new body position marker
@@ -249,7 +256,7 @@
 		if (newBody?.radius) {
 			ctx.beginPath();
 			ctx.moveTo(newBody.x, newBody.y);
-			ctx.lineTo(mouseX, mouseY);
+			ctx.lineTo(mouse.x, mouse.y);
 			ctx.stroke();
 		}
 	}
@@ -259,7 +266,7 @@
  
 		// Clear canvas
 		ctx.fillStyle = 'black';
-		ctx.fillRect(0, 0, screenW, screenH);
+		ctx.fillRect(0, 0, screen.x, screen.y);
  
 		// Update and render bodies
 		drawBodies();
@@ -297,7 +304,8 @@
   <!--Bottom Left-->
   <div class="fixed bottom-4 left-4 flex items-center gap-2  *:border">
     <button class="cursor-pointer p-4 " onclick={handleAddBody}> Add</button>
-    <p>Position: {newBody.x} {newBody.y}</p>
+    <p>Position: {newBody?.x ?? mouse.x}, {newBody?.y ?? mouse.y}</p>
+		<p>Radius: {(newBody?.radius ?? distanceToMouse(new Vector2(newBody.x, newBody.y))).toFixed(1)}</p>
 
   </div>
 
