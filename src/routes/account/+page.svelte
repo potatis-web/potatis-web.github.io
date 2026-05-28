@@ -12,9 +12,11 @@
 
 	// Assets
 	import waveBG from '$lib/assets/stacked-waves-haikei.svg';
+	import waveBGD from '$lib/assets/stacked-waves-haikei-dark.svg';
 	
 	// Services
 	import { logIn, signUp, getCurrentUser } from '$lib/services/auth.js';
+	import { isDarkMode } from '$lib/stores/theme.js';
 
 	// Variables
 	let loginState = $state(true);
@@ -29,6 +31,8 @@
 			console.log(user);
 			goto(resolve('/dashboard'));
 		}
+
+		
 	});
 
 	async function handleSubmit(e) {
@@ -66,7 +70,7 @@
 
 <title>{getMode()} - Quizmaker.gg</title>
 <main class="fixed inset-0 flex items-center justify-center">
-	<img src={waveBG} alt="background" class="fixed" />
+	<img src={$isDarkMode ? waveBGD : waveBG} alt="background" class="fixed" />
 	<Card>
 		<form
 			class="relative flex motion-reduce:animation-none flex-col gap-4"

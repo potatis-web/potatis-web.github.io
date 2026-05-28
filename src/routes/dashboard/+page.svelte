@@ -16,8 +16,9 @@
 
 	// Services
 	import { onAuthStateChange, logOut } from '$lib/services/auth';
-	import { getMyQuizzes, createQuiz } from '$lib/services/quizManager';
+	import { getMyQuizzes, createQuiz, deleteQuiz } from '$lib/services/quizManager';
 	import { isDarkMode } from '$lib/stores/theme';
+	import Quiz from '$lib/components/Quiz.svelte';
 
 	/*
 	// Structure
@@ -37,35 +38,39 @@
 	};
 	*/
 	// Constants
-	const makeNotification = function (e, text = 'Placeholder', type = 'info') {
+	const makeNotification = function (text = 'Placeholder', type = 'info') {
 		const obj = { text: text, id: Date.now(), type: type };
 		notifications.push(obj);
 		setTimeout(() => notifications.shift(), 5000);
 	};
+	const letterFormat = (s) => {
+		return s.slice(0, 1).toUpperCase();
+	};
 	const buttons = [
-		{ text: 'Add quiz', func: () => (quizModal = true), icon: Plus, idx: 1 },
-		{ text: 'Edit quiz', func: makeNotification, icon: Pen, idx: 2 },
-		{ text: 'Delete quiz', func: makeNotification, icon: Cross, idx: 3 },
+		{ text: 'Add quiz', func: () => {quizModal = true;}, icon: Plus, idx: 1 },
+		{ text: 'Edit quiz', func: () => {goto(resolve(`/quiz/${selectedQuiz.id}`));}, icon: Pen, idx: 2 },
+		{ text: 'Delete quiz', func: () => {if (selectedIndex) deleteModal = true; else makeNotification("No quiz selected", "info");}, icon: Cross, idx: 3 },
 	];
 	const links = [
 		{ text: 'Home', path: '/' },
 		{ text: 'Account', path: '/account' },
 		{ text: 'Devlog', path: '/devlog' },
 	];
+	
 	// Variables
 	let user = $state(null);
 	let notifications = $state([]);
-	let ql = $state();
+	let quizList = $state();
 	
 	// State
 	let loading = $state(false);
 	let quizModal = $state(false);
+	let deleteModal = $state(false);
 	let accountPopup = $state(false);
 	let selectedIndex = $state();
-
-	const letterFormat = (s) => {
-		return s.slice(0, 1).toUpperCase();
-	};
+	let selectedQuiz = $derived(quizList[selectedIndex])
+	
+	
 
 	let qn = $state();
 	let qd = $state();
@@ -89,20 +94,31 @@
 	async function loadQuizzes() {
 		loading = true;
 		const result = await getMyQuizzes(user.id);
-		ql = result.quizzes || [];
+		quizList = result.quizzes || [];
 		loading = false;
 	}
 
-	function handleCreateQuiz() {
+	async function handleCreateQuiz() {
 		const quizData = {
 			name: qn,
-			description: qn,
+			description: qd,
 			questions: [],
 		};
-		if (qn === '' && qn.length > 0) {
-			// Impossible condition, Just to bypass eslint errors
-			createQuiz(user.id, quizData);
+		const response = await createQuiz(user.id, quizData);
+		if (!response.success) {
+			makeNotification("Failed to create quiz", "error");
 		}
+		qn = qd = "";
+		quizModal = false;
+		loadQuizzes();
+	}
+	async function handleDeleteQuiz() {
+		const response = await deleteQuiz(selectedQuiz.id);
+		if (!response.success) {
+			makeNotification(response.error, "error")
+		}
+		loadQuizzes();
+		deleteModal = false;
 	}
 </script>
 
@@ -121,7 +137,7 @@
 				<!--Account button-->
 				<button
 					type="button"
-					class="absolute -top-px -right-px z-30 h-12 w-12 cursor-pointer rounded-3xl border border-soft-linen-300 bg-soft-linen-50 dark:bg-dusk-blue-900 dark:hover:bg-dusk-blue-800 dark:border-dusk-blue-800 dark shadow transition hover:bg-soft-linen-200"
+					class="absolute -top-px -right-px z-30 h-12 w-12 cursor-pointer rounded-3xl border border-soft-linen-300 bg-soft-linen-50 dark:bg-dusk-blue-900 dark:hover:bg-dusk-blue-800 dark:border-dusk-blue-800 shadow transition hover:bg-soft-linen-200"
 					onclick={() => (accountPopup = !accountPopup)}
 				>
 					{#if user?.email}
@@ -176,8 +192,8 @@
 	</div>
 
 	<!--Quizzes-->
-	{#if ql}
-		{#if ql.length === 0}
+	{#if quizList}
+		{#if quizList.length === 0}
 			<div class="flex h-full items-center justify-center self-center">
 				<div class="flex flex-col items-center">
 					<svg
@@ -197,19 +213,8 @@
 			</div>
 		{:else}
 			<main class="flex flex-wrap gap-4 overflow-y-scroll p-4">
-				{#each ql as quiz, i (quiz)}
-					<button
-						class={`quiz border ${i === selectedIndex ? 'border-2' : ''}`}
-						onclick={() => (selectedIndex = i)}
-					>
-						<img
-							class="absolute top-0 left-0 h-2/5 w-full object-fill"
-							src={quiz.image}
-							alt={quiz.name + ' Thumbnail'}
-						/>
-						<h3 class="relative">{quiz.name}</h3>
-						<p class="">{quiz.description}</p>
-					</button>
+				{#each quizList as quiz, idx (idx)}
+					<Quiz quiz={quiz} idx={idx} bind:selected={selectedIndex}/>
 				{/each}
 			</main>
 		{/if}
@@ -244,6 +249,15 @@
 				<Button type="submit">Create</Button>
 			</div>
 		</form>
+	</Modal>
+{/if}
+{#if deleteModal}
+	<Modal bind:modalState={deleteModal} class="flex flex-col gap-4">
+		<span class="heading block">Are you sure you want to delete this quiz?</span>
+		<div>
+			<Button func={handleDeleteQuiz}>Yes</Button>
+			<Button func={() => deleteModal = false}>Fuh naw 🥀</Button>
+		</div>
 	</Modal>
 {/if}
 
