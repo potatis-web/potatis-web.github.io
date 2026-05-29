@@ -9,6 +9,7 @@
 	import Notification from '$lib/components/Notification.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Card from '$lib/components/Card.svelte';
+	
 
 	// Assets
 	import waveBG from '$lib/assets/stacked-waves-haikei.svg';
@@ -17,6 +18,8 @@
 	// Services
 	import { logIn, signUp, getCurrentUser } from '$lib/services/auth.js';
 	import { isDarkMode } from '$lib/stores/theme.js';
+	import InputField from '$lib/components/InputField.svelte';
+	import InputText from '$lib/components/InputText.svelte';
 
 	// Variables
 	let loginState = $state(true);
@@ -78,44 +81,11 @@
 		>
 			<h1 class="heading border-b-2 p-2">{getMode()}</h1>
 			
-			<div class="field-wrapper">
-				<label for="email" class="required">E-Mail:</label>
-				<input
-					required
-					placeholder="example@email.com"
-					id="email"
-					type="email"
-					class="input-field"
-					bind:value={email}
-					oninput={validateForm}
-				/>
-			</div>
-
-			<div class="field-wrapper">
-				<label for="password" class="required">Password:</label>
-				<input
-					required
-					placeholder="●●●●●●●●"
-					id="password"
-					type="password"
-					class="input-field"
-					bind:value={password}
-					oninput={validateForm}
-				/>
-			</div>
+			<InputField required={true} preset="email" bind:value={email} />
+			<InputField required={true} preset="password" bind:value={password} />
+			
 			{#if !loginState}
-				<div class="field-wrapper">
-					<label for="password-confirm" class="required">Confirm password:</label>
-					<input
-						required
-						placeholder="●●●●●●●●"
-						id="password-confirm"
-						type="password"
-						class="input-field"
-						bind:value={confirmPassword}
-						oninput={validateForm}
-					/>
-				</div>
+				<InputField required={true} preset="password" text="Confirm Password" bind:value={confirmPassword} />
 			{/if}
 			<div class="field-wrapper justify-end">
 				<Button type="submit">{getMode()}</Button>

@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap');
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
+
 @layer components {
 	.btn-primary {
 		@apply cursor-pointer shadow px-3 py-2 
@@ -75,6 +77,9 @@
 }
 
 @theme {
+
+	--font-noto-sans: "Noto Sans", sans-serif;
+
 	--animate-timer: timer 5s linear 1 forwards;
 	--animate-fade-in: fadeIn 1500ms 1 forwards;
 
